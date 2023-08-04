@@ -5,6 +5,7 @@ from modules.html_generator import get_image_cache
 class CharaCard:
     def __init__(self, image: Path, data_file: Path):
         self.__name = data_file.stem
+        self.__image_path = image
         self.__image = f"file/{get_image_cache(image)}" if image is not None else None
         self.__data_file = data_file
 
@@ -19,6 +20,12 @@ class CharaCard:
 
     def to_dict(self):
         return {"name": self.__name, "image": self.__image, "data": self.__data_file}
+
+    def delete(self):
+        print("Deleting card: " + self.__name + "...")
+        self.__image_path.unlink()
+        self.__data_file.unlink()
+        print("Deleted.")
 
 
 def fetch_downloaded_charas():

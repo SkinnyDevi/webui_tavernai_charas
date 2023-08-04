@@ -1,19 +1,22 @@
 import gradio as gr
 import json
+import re
 
 from modules.shared import gradio
 import modules.ui as ui
 
 import extensions.tavernai_charas.chara_handler as chara_handler
 from extensions.tavernai_charas.tavernai_service import TavernAIService, TavernAICard
-from extensions.tavernai_charas.config_handler import ConfigHandler
+from extensions.tavernai_charas.config_handler import ConfigHandler, DeleteCardTracker
 
 
 CONFIG = ConfigHandler.setup()
+DELETE_CARD_INDEX = DeleteCardTracker()
 
 
 def mount_ui():
     gr.HTML(value=mount_chara_cards_css())
+
     with gr.Tabs():
         with gr.TabItem("Online Characters"):
             gr.Markdown("# Online Characters")
@@ -51,7 +54,7 @@ def mount_ui():
 
                     cat1 = random_categories[0]
                     create_tavernai_chara_display(
-                        f"Category: {cat1.capitalize()}",
+                        f"Category - {cat1.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
                             category=cat1, nsfw=CONFIG.get_allow_nsfw()
                         ),
@@ -59,7 +62,7 @@ def mount_ui():
 
                     cat2 = random_categories[1]
                     create_tavernai_chara_display(
-                        f"Category: {cat2.capitalize()}",
+                        f"Category - {cat2.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
                             category=cat2, nsfw=CONFIG.get_allow_nsfw()
                         ),
@@ -67,7 +70,7 @@ def mount_ui():
 
                     cat3 = random_categories[2]
                     create_tavernai_chara_display(
-                        f"Category: {cat3.capitalize()}",
+                        f"Category - {cat3.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
                             category=cat3, nsfw=CONFIG.get_allow_nsfw()
                         ),
@@ -75,7 +78,7 @@ def mount_ui():
 
                     cat4 = random_categories[3]
                     create_tavernai_chara_display(
-                        f"Category: {cat4.capitalize()}",
+                        f"Category - {cat4.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
                             category=cat4, nsfw=CONFIG.get_allow_nsfw()
                         ),
@@ -83,7 +86,7 @@ def mount_ui():
 
                     cat5 = random_categories[4]
                     create_tavernai_chara_display(
-                        f"Category: {cat5.capitalize()}",
+                        f"Category - {cat5.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
                             category=cat5, nsfw=CONFIG.get_allow_nsfw()
                         ),
@@ -100,18 +103,98 @@ def mount_ui():
         with gr.TabItem("Downloaded"):
             with gr.Column():
                 gr.Markdown("# Downloaded Characters")
-                refresh = gr.Button("Refresh")
-                with gr.Row(elem_id="tavernai_search_bar"):
-                    search_bar = gr.Textbox(
-                        placeholder="Search",
-                        show_label=False,
+                refresh = gr.Button(
+                    "Refresh", elem_classes="tavernai_refresh_downloaded_charas"
+                )
+                get_local_cards = chara_handler.fetch_downloaded_charas
+                delete_card_index = gr.State(value=-1)
+
+                with gr.Box(
+                    visible=False, elem_classes="file-saver"
+                ) as delete_card_box:
+                    delete_card_textbox = gr.Textbox(
+                        lines=1,
+                        label="You are about to delete this card:",
+                        interactive=False,
                     )
-                    search_btn = gr.Button("Search")
+                    with gr.Row(elem_id="tavernai_delete_chara_buttons"):
+                        confirm_card_delete = gr.Button(
+                            "Delete",
+                            elem_classes="small-button",
+                            variant="stop",
+                        )
+                        cancel_card_delete = gr.Button(
+                            "Cancel", elem_classes="small-button"
+                        )
+
+                        confirm_card_delete.click(
+                            on_confirm_delete_btn,
+                            None,
+                            delete_card_box,
+                            _js=refresh_downloaded(),
+                        )
+
+                        cancel_card_delete.click(
+                            on_cancel_delete_btn,
+                            None,
+                            delete_card_box,
+                        )
+
+                with gr.Row(elem_id="tavernai_downloaded_handlers"):
+                    with gr.Column():
+                        with gr.Row():
+                            search_bar = gr.Textbox(
+                                placeholder="Search",
+                                show_label=False,
+                            )
+                            search_btn = gr.Button("Search")
+
+                    with gr.Column():
+                        with gr.Row():
+                            all_cards = gr.Dropdown(
+                                choices=[
+                                    f"[{i}] {c.get_name()}"
+                                    for i, c in enumerate(get_local_cards())
+                                ],
+                                value=f"[0] {get_local_cards()[0].get_name()}",
+                                interactive=True,
+                                label="Delete a character",
+                                elem_classes=["slim-dropdown"],
+                            )
+                            all_cards.container = False
+                            refresh_delete_cards = ui.create_refresh_button(
+                                all_cards,
+                                lambda: None,
+                                lambda: {
+                                    "choices": [
+                                        f"[{i}] {c.get_name()}"
+                                        for i, c in enumerate(get_local_cards())
+                                    ],
+                                    "value": f"[0] {get_local_cards()[0].get_name()}",
+                                },
+                                [
+                                    "refresh-button",
+                                    "tavernai_refresh_downloaded_charas",
+                                ],
+                            )
+                            delete_card_btn = ui.create_delete_button(
+                                elem_classes=["refresh-button"]
+                            )
+
+                            delete_card_btn.click(
+                                on_delete_btn,
+                                all_cards,
+                                [
+                                    delete_card_textbox,
+                                    delete_card_box,
+                                ],
+                            )
 
                 downloaded = gr.Dataset(
                     components=[gr.HTML(visible=False)],
                     label="",
                     samples=compile_html_downloaded_chara_cards(),
+                    samples_per_page=15,
                     elem_classes=["tavernai_downloaded_container"],
                 )
 
@@ -139,10 +222,41 @@ def select_character(evt: gr.SelectData):
     return evt.value[1]
 
 
+def on_delete_btn(
+    card_dropdown: gr.Dropdown,
+):
+    match = re.search(r"\[(\d+)\]", card_dropdown)
+    DELETE_CARD_INDEX.set_index(int(match.group(1)))
+
+    return card_dropdown, gr.update(visible=True)
+
+
+def on_confirm_delete_btn():
+    chara_handler.fetch_downloaded_charas()[DELETE_CARD_INDEX.get_index()].delete()
+
+    return gr.update(visible=False)
+
+
+def on_cancel_delete_btn():
+    DELETE_CARD_INDEX.reset()
+    return gr.update(visible=False)
+
+
 def mount_chara_cards_css():
     css = """
     #tavernai_search_bar > div{
         min-width: 60vw;
+    }
+
+    #tavernai_delete_chara_buttons {
+        margin-top: 10px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #tavernai_downloaded_handlers {
+        align-items: center;
+        justify-conter: center;
     }
 
     .tavernai_downloaded_container > div:nth-child(2) {
@@ -230,6 +344,19 @@ def hit_all_refreshes():
     return """
     () => {
         var refreshes = document.querySelectorAll(".tavernai_slider_refresh");
+        setTimeout(() => {
+            for (let r of refreshes) {
+                setTimeout(() => r.click(), 250);
+            }
+        }, 500)
+    }
+    """
+
+
+def refresh_downloaded():
+    return """
+    () => {
+        var refreshes = document.querySelectorAll(".tavernai_refresh_downloaded_charas");
         for (let r of refreshes) {
             setTimeout(() => r.click(), 250);
         }
@@ -237,7 +364,7 @@ def hit_all_refreshes():
     """
 
 
-def create_tavernai_chara_display(title, samples):
+def create_tavernai_chara_display(title: str, samples):
     with gr.Row():
         gr.Markdown(f"## {title}")
         refresh_button = ui.ToolButton(
@@ -260,7 +387,6 @@ def create_tavernai_chara_display(title, samples):
     def download_character(evt: gr.SelectData):
         card = TavernAICard.from_dict(json.loads(evt.value[1]))
         TavernAICard.download_card(card)
-        gr.Error(f"Successfully downloaded {card.name} card")
 
     slider.select(download_character, None, None)
 
