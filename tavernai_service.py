@@ -57,9 +57,15 @@ class TavernAIService:
         response = requests.get(CATEGORIES).json()
 
         categories = []
-        for i in range(amount):
+        counter = 0
+        for i in range(len(response)):
+            if counter >= amount:
+                break
+
             index = randint(1, len(response)) - 1
-            categories.append(response[index].get("name"))
+            if response[index].get("count") > 4:
+                categories.append(response[index].get("name"))
+                counter += 1
 
         return categories
 
