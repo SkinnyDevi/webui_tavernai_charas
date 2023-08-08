@@ -119,6 +119,7 @@ def mount_ui():
                                     for cat in TavernAIService.fetch_catergories()
                                 ],
                                 elem_classes=["tavernai_categories"],
+                                label="",
                             )
 
                     with gr.Row(variant="panel", elem_id="tavernai_result_pages"):
@@ -140,6 +141,12 @@ def mount_ui():
                             "tavernai_result_set",
                         ],
                         samples_per_page=10,
+                    )
+
+                    allow_cat_nsfw.select(
+                        toggle_category_nsfw,
+                        [category_choices, current_section],
+                        search_results,
                     )
 
                     section_next.click(
@@ -384,6 +391,22 @@ def previous_category_section(
         )
 
     return gr.update(value=1), lambda: None
+
+
+def toggle_category_nsfw(
+    evt: gr.SelectData, selected_cat: gr.Radio, current_section: gr.Label
+):
+    allow = evt.selected
+    selected_cat = "$recent" if selected_cat is None else selected_cat
+
+    cards = TavernAIService.fetch_category_cards(
+        category=selected_cat,
+        amount=-1,
+        nsfw=allow,
+        page=int(current_section.get("label")),
+    )
+
+    return gr.update(samples=compile_html_online_chara_cards(cards))
 
 
 def change_tab():
