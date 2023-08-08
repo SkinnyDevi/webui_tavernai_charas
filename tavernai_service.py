@@ -1,5 +1,6 @@
 from pathlib import Path
 from random import randint
+import urllib.parse
 
 import json
 import requests
@@ -16,9 +17,9 @@ RECENT_CHARAS = CHARACTERS + "/board"
 class TavernAIService:
     @staticmethod
     def fetch_recent_cards(amount=30, nsfw=True):
+        params = TavernAIService.__encode_params(nsfw=nsfw)
         response = requests.get(
-            CATEGORIES
-            + f"/{TavernAIService.__category(recent=True)}{TavernAIService.__nsfw(allow=nsfw)}"
+            CATEGORIES + f"/{TavernAIService.__category(recent=True)}{params}"
         )
         decoded = response.json()
 
@@ -26,31 +27,46 @@ class TavernAIService:
 
     @staticmethod
     def fetch_random_cards(amount=30, nsfw=True):
+        params = TavernAIService.__encode_params(nsfw=nsfw)
         response = requests.get(
-            CATEGORIES
-            + f"/{TavernAIService.__category(random=True)}{TavernAIService.__nsfw(allow=nsfw)}"
+            CATEGORIES + f"/{TavernAIService.__category(random=True)}{params}"
         )
         decoded = response.json()
 
         return TavernAIService.__parseAmount(amount=amount, decoded=decoded)
 
     @staticmethod
-    def fetch_category_cards(category=None, amount=30, nsfw=True):
+    def fetch_category_cards(category=None, amount=30, nsfw=True, page=1):
+        params = TavernAIService.__encode_params(nsfw=nsfw, page=page)
         response = requests.get(
-            CATEGORIES
-            + f"/{TavernAIService.__category(category=category)}{TavernAIService.__nsfw(allow=nsfw)}"
+            CATEGORIES + f"/{TavernAIService.__category(category=category)}{params}"
         )
         decoded = response.json()
 
         return TavernAIService.__parseAmount(amount=amount, decoded=decoded)
+
+    @staticmethod
+    def fetch_catergories():
+        response = requests.get(CATEGORIES).json()
+
+        return [TavernAICategory.from_dict(entry) for entry in response]
+
+    @staticmethod
+    def fetch_category(name: str):
+        response = TavernAIService.fetch_catergories()
+
+        for cat in response:
+            if name == cat.name:
+                return cat
+
+        return None
 
     @staticmethod
     def fetch_query(query: str, nsfw=True):
-        response = requests.get(
-            CHARACTERS
-            + f"?q={query.encode()}{TavernAIService.__nsfw(start_param=False, nsfw=nsfw)}"
-        )
+        params = TavernAIService.__encode_params(nsfw=nsfw, q=query)
+        response = requests.get(CHARACTERS + params).json()
         print("Fetching query:" + query)
+        print("Result:", response)
 
     @staticmethod
     def fetch_random_categories(amount=5):
@@ -58,10 +74,8 @@ class TavernAIService:
 
         categories = []
         counter = 0
-        for i in range(len(response)):
-            if counter >= amount:
-                break
 
+        while counter < amount:
             index = randint(1, len(response)) - 1
             if response[index].get("count") > 4:
                 categories.append(response[index].get("name"))
@@ -77,15 +91,14 @@ class TavernAIService:
         if category is None:
             raise Exception("Category cannot be None")
 
-        return f"{category}/characters"
-
-    @staticmethod
-    def __nsfw(start_param=True, allow=True):
-        return f"{'?' if start_param else '&'}nsfw={'on' if allow else 'off'}"
+        return f"{TavernAIService.__url_encode(category)}/characters"
 
     @staticmethod
     def __parseAmount(decoded, amount):
-        cards = []
+        if amount == -1:
+            return [TavernAICard.from_dict(entry) for entry in decoded]
+
+        cards: list[TavernAICard] = []
         count = 0
         for entry in decoded:
             if count >= amount:
@@ -95,6 +108,17 @@ class TavernAIService:
             count += 1
 
         return cards
+
+    @staticmethod
+    def __url_encode(s: str):
+        return urllib.parse.quote(s, safe="")
+
+    @staticmethod
+    def __encode_params(**kwargs):
+        if "nsfw" in kwargs:
+            kwargs["nsfw"] = "on" if kwargs.get("nsfw") else "off"
+
+        return f"?{urllib.parse.urlencode(kwargs, quote_via=urllib.parse.quote)}"
 
 
 class TavernAICard:
@@ -211,3 +235,31 @@ class TavernAICard:
             chara_data = chara_data + chr(val)
 
         return json.loads(chara_data)
+
+
+class TavernAICategory:
+    def __init__(self, id: int, name: str, name_view: str, count: int):
+        self.id = id
+        self.name = name
+        self.name_view = name_view
+        self.count = count
+
+    @staticmethod
+    def from_dict(entry: dict):
+        return TavernAICategory(
+            entry.get("id"),
+            entry.get("name"),
+            entry.get("name_view"),
+            entry.get("count"),
+        )
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "name_view": self.name_view,
+            "count": self.count,
+        }
+
+    def category_url(self, nsfw=True):
+        return CATEGORIES + f"/{self.name}/characters?nsfw={'on' if nsfw else'off'}"

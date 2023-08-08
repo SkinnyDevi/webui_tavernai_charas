@@ -29,7 +29,7 @@ class CharaCard:
 
 
 def fetch_downloaded_charas():
-    charas = []
+    charas: list[CharaCard] = []
     characters = Path("characters")
     for file in sorted(characters.glob("*")):
         if file.suffix in [".json", ".yml", ".yaml"]:

@@ -5,9 +5,15 @@ import re
 from modules.shared import gradio
 import modules.ui as ui
 
-import extensions.tavernai_charas.chara_handler as chara_handler
-from extensions.tavernai_charas.tavernai_service import TavernAIService, TavernAICard
-from extensions.tavernai_charas.config_handler import ConfigHandler, DeleteCardTracker
+import extensions.webui_tavernai_charas.chara_handler as chara_handler
+from extensions.webui_tavernai_charas.tavernai_service import (
+    TavernAIService,
+    TavernAICard,
+)
+from extensions.webui_tavernai_charas.config_handler import (
+    ConfigHandler,
+    DeleteCardTracker,
+)
 
 
 CONFIG = ConfigHandler.setup()
@@ -15,8 +21,6 @@ DELETE_CARD_INDEX = DeleteCardTracker()
 
 
 def mount_ui():
-    gr.HTML(value=mount_chara_cards_css())
-
     with gr.Tabs():
         with gr.TabItem("Online Characters"):
             gr.Markdown("# Online Characters")
@@ -95,10 +99,78 @@ def mount_ui():
                 with gr.TabItem("Search"):
                     with gr.Row(elem_id="tavernai_search_bar"):
                         search_bar = gr.Textbox(
-                            placeholder="Search",
+                            placeholder="Search (searching omits category filtering)",
                             show_label=False,
                         )
                         search_btn = gr.Button("Search")
+                        deselect_category = gr.Button("Clear search filters")
+
+                    with gr.Accordion("Category Filters", open=False):
+                        allow_cat_nsfw = gr.CheckboxGroup(
+                            ["Allow NSFW"],
+                            label="Filters",
+                            interactive=True,
+                        )
+
+                        with gr.Accordion("Categories", open=False):
+                            category_choices = gr.Radio(
+                                [
+                                    cat.name
+                                    for cat in TavernAIService.fetch_catergories()
+                                ],
+                                elem_classes=["tavernai_categories"],
+                            )
+
+                    with gr.Row(variant="panel", elem_id="tavernai_result_pages"):
+                        section_previous = gr.Button("Previous section")
+                        current_section = gr.Label(1, label="Current Section")
+                        section_next = gr.Button("Next section")
+
+                    search_results = gr.Dataset(
+                        components=[gr.HTML(visible=True)],
+                        label="Selected category: $recent",
+                        samples=compile_html_online_chara_cards(
+                            TavernAIService.fetch_recent_cards(
+                                amount=-1,
+                                nsfw=True if len(allow_cat_nsfw.value) > 0 else False,
+                            )
+                        ),
+                        elem_classes=[
+                            "tavernai_downloaded_container",
+                            "tavernai_result_set",
+                        ],
+                        samples_per_page=10,
+                    )
+
+                    section_next.click(
+                        next_category_section,
+                        [category_choices, allow_cat_nsfw, current_section],
+                        [current_section, search_results],
+                    )
+
+                    section_previous.click(
+                        previous_category_section,
+                        [category_choices, allow_cat_nsfw, current_section],
+                        [current_section, search_results],
+                    )
+
+                    deselect_category.click(
+                        reset_category_filter,
+                        allow_cat_nsfw,
+                        [
+                            category_choices,
+                            search_results,
+                            current_section,
+                        ],
+                    )
+
+                    category_choices.input(
+                        filter_by_category,
+                        [category_choices, allow_cat_nsfw],
+                        [search_results, current_section],
+                    )
+
+                    search_results.select(download_character, None, None)
 
         with gr.TabItem("Downloaded"):
             with gr.Column():
@@ -107,7 +179,6 @@ def mount_ui():
                     "Refresh", elem_classes="tavernai_refresh_downloaded_charas"
                 )
                 get_local_cards = chara_handler.fetch_downloaded_charas
-                delete_card_index = gr.State(value=-1)
 
                 with gr.Box(
                     visible=False, elem_classes="file-saver"
@@ -222,6 +293,11 @@ def select_character(evt: gr.SelectData):
     return evt.value[1]
 
 
+def download_character(evt: gr.SelectData):
+    card = TavernAICard.from_dict(json.loads(evt.value[1]))
+    TavernAICard.download_card(card)
+
+
 def on_delete_btn(
     card_dropdown: gr.Dropdown,
 ):
@@ -242,91 +318,72 @@ def on_cancel_delete_btn():
     return gr.update(visible=False)
 
 
-def mount_chara_cards_css():
-    css = """
-    #tavernai_search_bar > div{
-        min-width: 60vw;
-    }
+def filter_by_category(selected: gr.Radio, allow_nsfw: gr.CheckboxGroup):
+    cards = TavernAIService.fetch_category_cards(
+        category=selected, amount=-1, nsfw=True if len(allow_nsfw) > 0 else False
+    )
 
-    #tavernai_delete_chara_buttons {
-        margin-top: 10px;
-        align-items: center;
-        justify-content: center;
-    }
+    title = f"Selected category: {selected}"
 
-    #tavernai_downloaded_handlers {
-        align-items: center;
-        justify-conter: center;
-    }
+    return (
+        gr.update(samples=compile_html_online_chara_cards(cards), label=title),
+        gr.update(value=1),
+    )
 
-    .tavernai_downloaded_container > div:nth-child(2) {
-        justify-content: center;
-    }
 
-    .tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-    }
+def reset_category_filter(allow_nsfw: gr.CheckboxGroup):
+    cards = TavernAIService.fetch_recent_cards(
+        -1, True if len(allow_nsfw) > 0 else False
+    )
 
-    .tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-track {
-        border-radius: 100vh;
-        background: #1f2937;
-    }
+    title = f"Selected category: $recent"
 
-    .tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-thumb {
-        background: var(--body-background-fill);
-        border-radius: 100vh;
-    }
+    return (
+        gr.update(value=None),
+        gr.update(samples=compile_html_online_chara_cards(cards), label=title),
+        gr.update(value=1),
+    )
 
-    .tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-thumb:hover {
-        background: var(--table-row-focus);
-    }
 
-    .tavernai_downloaded_container > div.label,
-    .tavernai_card_display > div.label {
-        display: none !important;
-    }
+def next_category_section(
+    selected: gr.Radio, allow_nsfw: gr.CheckboxGroup, current: gr.Label
+):
+    current_val = int(current.get("label")) + 1
+    selected = "$recent" if selected is None else selected
 
-    .tavernai_card_display {
-        padding: 5px;
-        background-color: #1f2937;
-        border-radius: 8px;
-        border: var(--block-border-width) solid var(--border-color-primary);
-    }
+    cards = TavernAIService.fetch_category_cards(
+        category=selected,
+        amount=-1,
+        nsfw=True if len(allow_nsfw) > 0 else False,
+        page=current_val,
+    )
 
-    /* aka: tavern_card_slider */
-    .tavernai_card_display > div:nth-child(2) {
-        display: block !important;
-        height: 320px !important;
-        overflow-x: scroll !important;
-        white-space: nowrap !important;
-    }
+    return gr.update(value=current_val), gr.update(
+        samples=compile_html_online_chara_cards(cards)
+    )
 
-    .tavernai_chara_card {
-        width: 250px;
-        height: 265px;
-    }
 
-    .tavernai_chara_card>img {
-        width: 225px;
-        height: 225px;
-        background-color: gray;
-        object-fit: cover;
-        margin: 0 auto;
-        border-radius: 1rem;
-        margin-bottom: 10px;
-        border: 3px solid #354091f9;
-    }
+def previous_category_section(
+    selected: gr.Radio, allow_nsfw: gr.CheckboxGroup, current: gr.Label
+):
+    current_val = int(current.get("label"))
+    selected = "$recent" if selected is None else selected
 
-    .tavernai_chara_card>p {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        font-weight: bold;
-        font-size: 20px;
-    }
-    """
-    return f"<style>{css}</style>"
+    if current_val > 1:
+        current_val -= 1
+
+        cards = TavernAIService.fetch_category_cards(
+            category=selected,
+            amount=-1,
+            nsfw=True if len(allow_nsfw) > 0 else False,
+            page=current_val,
+        )
+
+        return gr.update(value=current_val), gr.update(
+            samples=compile_html_online_chara_cards(cards)
+        )
+
+    return gr.update(value=1), lambda: None
 
 
 def change_tab():
@@ -384,10 +441,6 @@ def create_tavernai_chara_display(title: str, samples):
         samples_per_page=30,
     )
 
-    def download_character(evt: gr.SelectData):
-        card = TavernAICard.from_dict(json.loads(evt.value[1]))
-        TavernAICard.download_card(card)
-
     slider.select(download_character, None, None)
 
     # copied from ui.create_refresh_button method
@@ -424,7 +477,7 @@ def compile_html_downloaded_chara_cards():
     return html_cards
 
 
-def compile_html_online_chara_cards(charas):
+def compile_html_online_chara_cards(charas: list[TavernAICard]):
     html_cards = []
 
     chara_el = ['<div class="tavernai_chara_card">', None, "</div>"]

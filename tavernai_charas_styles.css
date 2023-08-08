@@ -1,0 +1,113 @@
+/* TAVERNAI CHARAS EXT STYLING */
+
+#tavernai_search_bar > div {
+  min-width: 60vw;
+}
+
+#tavernai_delete_chara_buttons {
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+#tavernai_downloaded_handlers {
+  align-items: center;
+  justify-content: center;
+}
+
+.tavernai_downloaded_container > div:nth-child(2) {
+  justify-content: center;
+}
+
+.tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-track {
+  border-radius: 100vh;
+  background: #1f2937;
+}
+
+.tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-thumb {
+  background: var(--body-background-fill);
+  border-radius: 100vh;
+}
+
+.tavernai_downloaded_container
+  > div:nth-child(2)::-webkit-scrollbar-thumb:hover {
+  background: var(--table-row-focus);
+}
+
+.tavernai_downloaded_container > div.label,
+.tavernai_card_display > div.label {
+  display: none !important;
+}
+
+.tavernai_result_set > div.label {
+  display: flex !important;
+}
+
+.tavernai_card_display {
+  padding: 5px;
+  background-color: #1f2937;
+  border-radius: 8px;
+  border: var(--block-border-width) solid var(--border-color-primary);
+}
+
+/* aka: tavern_card_slider */
+.tavernai_card_display > div:nth-child(2) {
+  display: block !important;
+  height: 320px !important;
+  overflow-x: scroll !important;
+  white-space: nowrap !important;
+}
+
+.tavernai_result_set {
+  padding: 5px;
+  background-color: #1f2937;
+  border-radius: 8px;
+  border: var(--block-border-width) solid var(--border-color-primary);
+}
+
+.tavernai_result_set > div:nth-child(2) {
+  overflow-x: scroll !important;
+  white-space: nowrap !important;
+}
+
+.tavernai_categories {
+  height: 28rem;
+  overflow-x: auto !important;
+}
+
+#tavernai_result_pages > * {
+  height: 50px;
+}
+
+#tavernai_result_pages > div > div > div.output-class {
+  padding: 0;
+}
+
+.tavernai_chara_card {
+  width: 250px;
+  height: 265px;
+}
+
+.tavernai_chara_card > img {
+  width: 225px;
+  height: 225px;
+  background-color: gray;
+  object-fit: cover;
+  margin: 0 auto;
+  border-radius: 1rem;
+  margin-bottom: 10px;
+  border: 3px solid #354091f9;
+}
+
+.tavernai_chara_card > p {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  font-size: 20px;
+}
