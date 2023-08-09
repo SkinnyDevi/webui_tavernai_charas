@@ -29,7 +29,7 @@ def mount_ui():
                             ["Allow NSFW"],
                             label="Filters",
                             value=[
-                                "Allow NSFW" if CONFIG.get_allow_nsfw() else "",
+                                "Allow NSFW" if CONFIG.allow_nsfw else "",
                             ],
                             interactive=True,
                         )
@@ -37,17 +37,17 @@ def mount_ui():
                             apply_checkbox, [], None, _js=hit_all_refreshes()
                         )
 
-                    recent_charas = create_tavernai_chara_display(
+                    create_tavernai_chara_display(
                         "Recent Charas",
                         lambda: TavernAIService.fetch_recent_cards(
-                            nsfw=CONFIG.get_allow_nsfw()
+                            nsfw=CONFIG.allow_nsfw
                         ),
                     )
 
-                    random_charas = create_tavernai_chara_display(
+                    create_tavernai_chara_display(
                         "Random Characters",
                         lambda: TavernAIService.fetch_random_cards(
-                            nsfw=CONFIG.get_allow_nsfw()
+                            nsfw=CONFIG.allow_nsfw
                         ),
                     )
 
@@ -57,7 +57,7 @@ def mount_ui():
                     create_tavernai_chara_display(
                         f"Category - {cat1.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat1.name, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat1.name, nsfw=CONFIG.allow_nsfw
                         ),
                     )
 
@@ -65,7 +65,7 @@ def mount_ui():
                     create_tavernai_chara_display(
                         f"Category - {cat2.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat2.name, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat2.name, nsfw=CONFIG.allow_nsfw
                         ),
                     )
 
@@ -73,7 +73,7 @@ def mount_ui():
                     create_tavernai_chara_display(
                         f"Category - {cat3.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat3.name, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat3.name, nsfw=CONFIG.allow_nsfw
                         ),
                     )
 
@@ -81,7 +81,7 @@ def mount_ui():
                     create_tavernai_chara_display(
                         f"Category - {cat4.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat4.name, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat4.name, nsfw=CONFIG.allow_nsfw
                         ),
                     )
 
@@ -89,7 +89,7 @@ def mount_ui():
                     create_tavernai_chara_display(
                         f"Category - {cat5.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat5.name, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat5.name, nsfw=CONFIG.allow_nsfw
                         ),
                     )
 
@@ -257,24 +257,24 @@ def mount_ui():
                         with gr.Row():
                             all_cards = gr.Dropdown(
                                 choices=[
-                                    f"[{i}] {c.get_name()}"
+                                    f"[{i}] {c.name}"
                                     for i, c in enumerate(get_local_cards())
                                 ],
-                                value=f"[0] {get_local_cards()[0].get_name()}",
+                                value=f"[0] {get_local_cards()[0].name}",
                                 interactive=True,
                                 label="Delete a character",
                                 elem_classes=["slim-dropdown"],
                             )
                             all_cards.container = False
-                            refresh_delete_cards = ui.create_refresh_button(
+                            ui.create_refresh_button(
                                 all_cards,
                                 lambda: None,
                                 lambda: {
                                     "choices": [
-                                        f"[{i}] {c.get_name()}"
+                                        f"[{i}] {c.name}"
                                         for i, c in enumerate(get_local_cards())
                                     ],
-                                    "value": f"[0] {get_local_cards()[0].get_name()}",
+                                    "value": f"[0] {get_local_cards()[0].name}",
                                 },
                                 [
                                     "refresh-button",
@@ -328,7 +328,7 @@ def select_character(evt: gr.SelectData):
 
 def download_character(evt: gr.SelectData):
     card = TavernAICard.from_dict(json.loads(evt.value[1]))
-    TavernAICard.download_card(card)
+    TavernAIService.download_card(card)
 
 
 def on_delete_btn(
@@ -530,27 +530,27 @@ def create_tavernai_chara_display(title: str, samples):
 
 def compile_html_downloaded_chara_cards():
     charas = offline_chara_service.fetch_downloaded_charas()
-    html_cards = []
+    html_cards: list[list] = []
 
     chara_el = ['<div class="tavernai_chara_card">', None, "</div>"]
     for c in charas:
-        image_el = f'<img src="{c.get_image()}">'
-        name_el = f"<p>{c.get_name()}</p>"
+        image_el = f'<img src="{c.image}">'
+        name_el = f"<p>{c.name}</p>"
 
         element = chara_el.copy()
         element[1] = image_el + name_el
 
-        html_cards.append(["".join(element), c.get_name()])
+        html_cards.append(["".join(element), c.name])
 
     return html_cards
 
 
 def compile_html_online_chara_cards(charas: list[TavernAICard]):
-    html_cards = []
+    html_cards: list[list] = []
 
     chara_el = ['<div class="tavernai_chara_card">', None, "</div>"]
     for c in charas:
-        image_el = f'<img src="{c.img_url()}">'
+        image_el = f'<img src="{c.img_url}">'
         name_el = f"<p>{c.name}</p>"
 
         element = chara_el.copy()

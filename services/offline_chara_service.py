@@ -2,34 +2,46 @@ from pathlib import Path
 from modules.html_generator import get_image_cache
 
 
-class CharaCard:
+class OfflineCharaCard:
     def __init__(self, image: Path, data_file: Path):
-        self.__name = data_file.stem
-        self.__image_path = image
-        self.__image = f"file/{get_image_cache(image)}" if image is not None else None
-        self.__data_file = data_file
+        self._name = data_file.stem
+        self._image_path = image
+        self._image = f"file/{get_image_cache(image)}" if image is not None else None
+        self._data_file = data_file
 
-    def get_name(self):
-        return self.__name.replace("_", " ")
+    @property
+    def name(self):
+        return self._name.replace("_", " ")
 
-    def get_image(self):
-        return self.__image
+    @property
+    def image(self):
+        return self._image
 
-    def get_data(self):
-        return self.__data_file
+    @property
+    def data(self):
+        return self._data_file
+
+    @property
+    def image_path(self):
+        return self._image_path
 
     def to_dict(self):
-        return {"name": self.__name, "image": self.__image, "data": self.__data_file}
+        return {
+            "name": self._name,
+            "image": self._image,
+            "data": self._data_file,
+            "image_path": self._image_path,
+        }
 
     def delete(self):
-        print(f"Deleting card: {self.__name}...")
-        self.__image_path.unlink()
-        self.__data_file.unlink()
+        print(f"Deleting card: {self._name}...")
+        self._image_path.unlink()
+        self._data_file.unlink()
         print("Deleted.")
 
 
 def fetch_downloaded_charas():
-    charas: list[CharaCard] = []
+    charas: list[OfflineCharaCard] = []
     characters = Path("characters")
     for file in sorted(characters.glob("*")):
         if file.suffix in [".json", ".yml", ".yaml"]:
@@ -37,7 +49,7 @@ def fetch_downloaded_charas():
             webp = characters.joinpath(file.stem + ".webp")
 
             charas.append(
-                CharaCard(
+                OfflineCharaCard(
                     png if png.exists() else webp if webp.exists() else None, file
                 )
             )
@@ -52,7 +64,7 @@ class DeleteCardTracker:
     def set_index(self, i: int):
         self.__card_index = i
 
-    def get_index(self) -> int:
+    def get_index(self) -> int | None:
         return self.__card_index
 
     def reset(self):
