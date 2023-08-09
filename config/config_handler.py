@@ -4,7 +4,7 @@ import json
 
 
 class ConfigHandler:
-    path = Path("extensions/webui_tavernai_charas/chara_config.json")
+    path = Path("extensions/webui_tavernai_charas/config/chara_config.json")
 
     def __init__(self, json_data):
         self.__allow_nsfw = json_data.get("allow_nsfw")

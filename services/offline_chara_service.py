@@ -22,7 +22,7 @@ class CharaCard:
         return {"name": self.__name, "image": self.__image, "data": self.__data_file}
 
     def delete(self):
-        print("Deleting card: " + self.__name + "...")
+        print(f"Deleting card: {self.__name}...")
         self.__image_path.unlink()
         self.__data_file.unlink()
         print("Deleted.")

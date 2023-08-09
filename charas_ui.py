@@ -5,12 +5,12 @@ import re
 from modules.shared import gradio
 import modules.ui as ui
 
-import extensions.webui_tavernai_charas.chara_handler as chara_handler
-from extensions.webui_tavernai_charas.tavernai_service import (
+import extensions.webui_tavernai_charas.services.offline_chara_service as offline_chara_service
+from extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIService,
     TavernAICard,
 )
-from extensions.webui_tavernai_charas.config_handler import (
+from extensions.webui_tavernai_charas.config.config_handler import (
     ConfigHandler,
     DeleteCardTracker,
 )
@@ -214,7 +214,7 @@ def mount_ui():
                 refresh = gr.Button(
                     "Refresh", elem_classes="tavernai_refresh_downloaded_charas"
                 )
-                get_local_cards = chara_handler.fetch_downloaded_charas
+                get_local_cards = offline_chara_service.fetch_downloaded_charas
 
                 with gr.Box(
                     visible=False, elem_classes="file-saver"
@@ -344,7 +344,9 @@ def on_delete_btn(
 
 
 def on_confirm_delete_btn():
-    chara_handler.fetch_downloaded_charas()[DELETE_CARD_INDEX.get_index()].delete()
+    offline_chara_service.fetch_downloaded_charas()[
+        DELETE_CARD_INDEX.get_index()
+    ].delete()
 
     return gr.update(visible=False)
 
@@ -538,7 +540,7 @@ def create_tavernai_chara_display(title: str, samples):
 
 
 def compile_html_downloaded_chara_cards():
-    charas = chara_handler.fetch_downloaded_charas()
+    charas = offline_chara_service.fetch_downloaded_charas()
     html_cards = []
 
     chara_el = ['<div class="tavernai_chara_card">', None, "</div>"]
