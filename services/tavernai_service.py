@@ -70,15 +70,15 @@ class TavernAIService:
 
     @staticmethod
     def fetch_random_categories(amount=5):
-        response = requests.get(CATEGORIES).json()
+        response = TavernAIService.fetch_catergories()
 
-        categories = []
+        categories: list[TavernAICategory] = []
         counter = 0
 
         while counter < amount:
             index = randint(1, len(response)) - 1
-            if response[index].get("count") > 4:
-                categories.append(response[index].get("name"))
+            if response[index].count > 4:
+                categories.append(response[index])
                 counter += 1
 
         return categories
@@ -136,17 +136,61 @@ class TavernAICard:
         status: int,
         nsfw: bool,
     ):
-        self.id: int = id
-        self.public_id: str = public_id
-        self.public_id_short: str = public_id_short
-        self.user_id: int = user_id
-        self.user_name: str = user_name
-        self.user_name_view: str = user_name_view
-        self.name: str = name
-        self.short_description: str = short_description
-        self.create_date: str = create_date
-        self.status: int = status
-        self.nsfw: bool = nsfw
+        self._id: int = id
+        self._public_id: str = public_id
+        self._public_id_short: str = public_id_short
+        self._user_id: int = user_id
+        self._user_name: str = user_name
+        self._user_name_view: str = user_name_view
+        self._name: str = name
+        self._short_description: str = short_description
+        self._create_date: str = create_date
+        self._status: int = status
+        self._nsfw: bool = nsfw
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def public_id(self):
+        return self._public_id
+
+    @property
+    def public_id_short(self):
+        return self._public_id_short
+
+    @property
+    def user_id(self):
+        return self._user_id
+
+    @property
+    def user_name(self):
+        return self._user_name
+
+    @property
+    def user_name_view(self):
+        return self._user_name_view
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def short_description(self):
+        return self._short_description
+
+    @property
+    def create_date(self):
+        return self._create_date
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def nsfw(self):
+        return self._nsfw
 
     @staticmethod
     def from_dict(entry: dict):
@@ -239,10 +283,26 @@ class TavernAICard:
 
 class TavernAICategory:
     def __init__(self, id: int, name: str, name_view: str, count: int):
-        self.id = id
-        self.name = name
-        self.name_view = name_view
-        self.count = count
+        self._id = id
+        self._name = name
+        self._name_view = name_view
+        self._count = count
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def name_view(self):
+        return self._name_view
+
+    @property
+    def count(self):
+        return self._count
 
     @staticmethod
     def from_dict(entry: dict):
@@ -255,11 +315,11 @@ class TavernAICategory:
 
     def to_dict(self) -> dict:
         return {
-            "id": self.id,
-            "name": self.name,
-            "name_view": self.name_view,
-            "count": self.count,
+            "id": self._id,
+            "name": self._name,
+            "name_view": self._name_view,
+            "count": self._count,
         }
 
     def category_url(self, nsfw=True):
-        return CATEGORIES + f"/{self.name}/characters?nsfw={'on' if nsfw else'off'}"
+        return CATEGORIES + f"/{self._name}/characters?nsfw={'on' if nsfw else'off'}"

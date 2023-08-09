@@ -33,17 +33,3 @@ class ConfigHandler:
 
     def to_dict(self):
         return {"allow_nsfw": self.__allow_nsfw}
-
-
-class DeleteCardTracker:
-    def __init__(self):
-        self.__card_index = None
-
-    def set_index(self, i: int):
-        self.__card_index = i
-
-    def get_index(self) -> int:
-        return self.__card_index
-
-    def reset(self):
-        self.__card_index = None

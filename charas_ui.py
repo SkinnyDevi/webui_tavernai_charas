@@ -10,14 +10,11 @@ from extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIService,
     TavernAICard,
 )
-from extensions.webui_tavernai_charas.config.config_handler import (
-    ConfigHandler,
-    DeleteCardTracker,
-)
+from extensions.webui_tavernai_charas.config.config_handler import ConfigHandler
 
 
 CONFIG = ConfigHandler.setup()
-DELETE_CARD_INDEX = DeleteCardTracker()
+DELETE_CARD_INDEX = offline_chara_service.DeleteCardTracker()
 
 
 def mount_ui():
@@ -58,41 +55,41 @@ def mount_ui():
 
                     cat1 = random_categories[0]
                     create_tavernai_chara_display(
-                        f"Category - {cat1.capitalize()}",
+                        f"Category - {cat1.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat1, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat1.name, nsfw=CONFIG.get_allow_nsfw()
                         ),
                     )
 
                     cat2 = random_categories[1]
                     create_tavernai_chara_display(
-                        f"Category - {cat2.capitalize()}",
+                        f"Category - {cat2.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat2, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat2.name, nsfw=CONFIG.get_allow_nsfw()
                         ),
                     )
 
                     cat3 = random_categories[2]
                     create_tavernai_chara_display(
-                        f"Category - {cat3.capitalize()}",
+                        f"Category - {cat3.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat3, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat3.name, nsfw=CONFIG.get_allow_nsfw()
                         ),
                     )
 
                     cat4 = random_categories[3]
                     create_tavernai_chara_display(
-                        f"Category - {cat4.capitalize()}",
+                        f"Category - {cat4.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat4, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat4.name, nsfw=CONFIG.get_allow_nsfw()
                         ),
                     )
 
                     cat5 = random_categories[4]
                     create_tavernai_chara_display(
-                        f"Category - {cat5.capitalize()}",
+                        f"Category - {cat5.name_view.capitalize()}",
                         lambda: TavernAIService.fetch_category_cards(
-                            category=cat5, nsfw=CONFIG.get_allow_nsfw()
+                            category=cat5.name, nsfw=CONFIG.get_allow_nsfw()
                         ),
                     )
 
@@ -524,17 +521,9 @@ def create_tavernai_chara_display(title: str, samples):
 
     # copied from ui.create_refresh_button method
     def refresh():
-        def refreshed_args():
-            return {"samples": compile_html_online_chara_cards(samples())}
+        return gr.update(samples=compile_html_online_chara_cards(samples()))
 
-        args = refreshed_args() if callable(refreshed_args) else refreshed_args
-
-        for k, v in args.items():
-            setattr(slider, k, v)
-
-        return gr.update(**(args or {}))
-
-    refresh_button.click(fn=refresh, inputs=[], outputs=[slider])
+    refresh_button.click(refresh, [], [slider])
 
     return slider
 
