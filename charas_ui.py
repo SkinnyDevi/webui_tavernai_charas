@@ -96,6 +96,11 @@ def mount_ui():
                         ),
                     )
 
+                    gr.Markdown(
+                        """*Disclaimer*: As TavernAI is a community supported character database, characters may often be mis-categorized,
+                            or may be NSFW when they are marked as not being NSFW."""
+                    )
+
                 with gr.TabItem("Search"):
                     with gr.Row(elem_id="tavernai_search_bar"):
                         search_bar = gr.Textbox(
@@ -104,6 +109,11 @@ def mount_ui():
                         )
                         search_btn = gr.Button("Search")
                         deselect_category = gr.Button("Clear search filters")
+
+                    gr.Markdown(
+                        """**Note**: Searching text and filtering by category is not possible due to the API's limitations.
+                        Make sure you clear your search filters before using one or the other for a better experience."""
+                    )
 
                     with gr.Accordion("Category Filters", open=False):
                         allow_cat_nsfw = gr.CheckboxGroup(
@@ -143,10 +153,21 @@ def mount_ui():
                         samples_per_page=10,
                     )
 
+                    gr.Markdown(
+                        """*Disclaimer*: As TavernAI is a community supported character database, characters may often be mis-categorized,
+                            or may be NSFW when they are marked as not being NSFW."""
+                    )
+
                     allow_cat_nsfw.select(
                         toggle_category_nsfw,
-                        [category_choices, current_section],
+                        [category_choices, current_section, search_bar],
                         search_results,
+                    )
+
+                    search_btn.click(
+                        apply_input_search,
+                        [search_bar, allow_cat_nsfw],
+                        [search_results, section_next, section_previous],
                     )
 
                     section_next.click(
@@ -168,13 +189,21 @@ def mount_ui():
                             category_choices,
                             search_results,
                             current_section,
+                            search_bar,
+                            section_next,
+                            section_previous,
                         ],
                     )
 
                     category_choices.input(
                         filter_by_category,
                         [category_choices, allow_cat_nsfw],
-                        [search_results, current_section],
+                        [
+                            search_results,
+                            current_section,
+                            section_next,
+                            section_previous,
+                        ],
                     )
 
                     search_results.select(download_character, None, None)
@@ -327,7 +356,7 @@ def on_cancel_delete_btn():
 
 def filter_by_category(selected: gr.Radio, allow_nsfw: gr.CheckboxGroup):
     cards = TavernAIService.fetch_category_cards(
-        category=selected, amount=-1, nsfw=True if len(allow_nsfw) > 0 else False
+        category=selected, amount=-1, nsfw=len(allow_nsfw) > 0
     )
 
     title = f"Selected category: {selected}"
@@ -335,13 +364,13 @@ def filter_by_category(selected: gr.Radio, allow_nsfw: gr.CheckboxGroup):
     return (
         gr.update(samples=compile_html_online_chara_cards(cards), label=title),
         gr.update(value=1),
+        gr.update(interactive=True),
+        gr.update(interactive=True),
     )
 
 
 def reset_category_filter(allow_nsfw: gr.CheckboxGroup):
-    cards = TavernAIService.fetch_recent_cards(
-        -1, True if len(allow_nsfw) > 0 else False
-    )
+    cards = TavernAIService.fetch_recent_cards(-1, len(allow_nsfw) > 0)
 
     title = f"Selected category: $recent"
 
@@ -349,6 +378,9 @@ def reset_category_filter(allow_nsfw: gr.CheckboxGroup):
         gr.update(value=None),
         gr.update(samples=compile_html_online_chara_cards(cards), label=title),
         gr.update(value=1),
+        gr.update(value=""),
+        gr.update(interactive=True),
+        gr.update(interactive=True),
     )
 
 
@@ -382,7 +414,7 @@ def previous_category_section(
         cards = TavernAIService.fetch_category_cards(
             category=selected,
             amount=-1,
-            nsfw=True if len(allow_nsfw) > 0 else False,
+            nsfw=len(allow_nsfw) > 0,
             page=current_val,
         )
 
@@ -394,19 +426,41 @@ def previous_category_section(
 
 
 def toggle_category_nsfw(
-    evt: gr.SelectData, selected_cat: gr.Radio, current_section: gr.Label
+    evt: gr.SelectData,
+    selected_cat: gr.Radio,
+    current_section: gr.Label,
+    search_input: gr.Textbox,
 ):
     allow = evt.selected
     selected_cat = "$recent" if selected_cat is None else selected_cat
 
-    cards = TavernAIService.fetch_category_cards(
-        category=selected_cat,
-        amount=-1,
-        nsfw=allow,
-        page=int(current_section.get("label")),
-    )
+    if search_input is None or search_input == "":
+        cards = TavernAIService.fetch_category_cards(
+            category=selected_cat,
+            amount=-1,
+            nsfw=allow,
+            page=int(current_section.get("label")),
+        )
+    else:
+        cards = TavernAIService.fetch_query(search_input, allow)
 
     return gr.update(samples=compile_html_online_chara_cards(cards))
+
+
+def apply_input_search(search_input: gr.Textbox, allow_nsfw: gr.CheckboxGroup):
+    if search_input is None or search_input == "":
+        cards = TavernAIService.fetch_recent_cards(-1, len(allow_nsfw) > 0)
+    else:
+        cards = TavernAIService.fetch_query(search_input, len(allow_nsfw) > 0)
+
+    return (
+        gr.update(
+            samples=compile_html_online_chara_cards(cards),
+            label="Displaying search results",
+        ),
+        gr.update(interactive=False),
+        gr.update(interactive=False),
+    )
 
 
 def change_tab():

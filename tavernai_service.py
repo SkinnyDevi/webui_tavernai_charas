@@ -64,9 +64,9 @@ class TavernAIService:
     @staticmethod
     def fetch_query(query: str, nsfw=True):
         params = TavernAIService.__encode_params(nsfw=nsfw, q=query)
-        response = requests.get(CHARACTERS + params).json()
-        print("Fetching query:" + query)
-        print("Result:", response)
+        response = requests.get(CHARACTERS + params).json().get("characters")
+
+        return TavernAIService.__parseAmount(response, -1)
 
     @staticmethod
     def fetch_random_categories(amount=5):
