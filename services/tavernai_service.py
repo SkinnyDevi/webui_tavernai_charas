@@ -245,10 +245,10 @@ class TavernAIService:
             exif = TavernAIService.__disect_exif(card.name)
 
             exif["char_name"] = card.name
-            exif["char_persona"] = exif.get("description")
-            exif["world_scenario"] = exif.get("scenario")
-            exif["char_greeting"] = exif.get("first_mes")
-            exif["example_dialogue"] = exif.get("mes_example")
+            exif["char_persona"] = exif.pop("description")
+            exif["world_scenario"] = exif.pop("scenario")
+            exif["char_greeting"] = exif.pop("first_mes")
+            exif["example_dialogue"] = exif.pop("mes_example")
 
             data_file.write(json.dumps(exif))
 
