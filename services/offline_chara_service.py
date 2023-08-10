@@ -35,8 +35,10 @@ class OfflineCharaCard:
 
     def delete(self):
         print(f"Deleting card: {self._name}...")
-        self._image_path.unlink()
-        self._data_file.unlink()
+        if self._image_path:
+            self._image_path.unlink()
+        if self._data_file:
+            self._data_file.unlink()
         print("Deleted.")
 
 

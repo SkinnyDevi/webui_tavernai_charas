@@ -5,8 +5,7 @@ import urllib.parse
 import json
 import requests
 
-from PIL import Image
-from PIL.ExifTags import TAGS
+from PIL import Image, ExifTags
 
 API_URL = "https://tavernai.net"
 CATEGORIES = API_URL + "/api/categories"
@@ -261,30 +260,18 @@ class TavernAIService:
         image_path.unlink()
 
     @staticmethod
-    def __disect_exif(card_name, get_bytes=False) -> dict:
-        ret = {}
-        i = Image.open(Path("characters").joinpath(card_name + ".webp"))
-        info = i.getexif()
-        for tag, value in info.items():
-            decoded = TAGS.get(tag, tag)
-            ret[decoded] = value
+    def __disect_exif(card_name) -> dict:
+        img = Image.open(Path("characters").joinpath(card_name + ".webp"))
 
-        if get_bytes:
-            return ret
+        exif = {}
+        for k, v in img.getexif().items():
+            if k in ExifTags.TAGS:
+                exif[ExifTags.TAGS[k]] = v
 
-        usercomment = ret.get("UserComment")
-        stringbytes = ""
-        for val in usercomment:
-            stringbytes = stringbytes + chr(val)
+        img_bytes: bytes = exif.get("UserComment")
+        hex_bytes = list(map(lambda x: hex(int(x))[2:], img_bytes[8:].split(b",")))
 
-        stringbytes = stringbytes.split(",")
-        stringbytes[0] = "123"
-        stringbytes = [int(b) for b in stringbytes]
-
-        chara_data = ""
-        for val in stringbytes:
-            chara_data = chara_data + chr(val)
-
+        chara_data = bytearray.fromhex(" ".join(hex_bytes).upper()).decode("utf-8")
         return json.loads(chara_data)
 
     @staticmethod
