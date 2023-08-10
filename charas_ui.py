@@ -6,6 +6,9 @@ from modules.shared import gradio
 import modules.ui as ui
 
 import extensions.webui_tavernai_charas.services.offline_chara_service as offline_chara_service
+from extensions.webui_tavernai_charas.services.offline_chara_service import (
+    OfflineCharaCard,
+)
 from extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIService,
     TavernAICard,
@@ -247,11 +250,11 @@ def mount_ui():
                 with gr.Row(elem_id="tavernai_downloaded_handlers"):
                     with gr.Column():
                         with gr.Row():
-                            search_bar = gr.Textbox(
+                            offline_search_bar = gr.Textbox(
                                 placeholder="Search",
                                 show_label=False,
+                                interactive=True,
                             )
-                            search_btn = gr.Button("Search")
 
                     with gr.Column():
                         with gr.Row():
@@ -301,6 +304,8 @@ def mount_ui():
                     samples_per_page=15,
                     elem_classes=["tavernai_downloaded_container"],
                 )
+
+                offline_search_bar.change(search_offline_charas, None, downloaded)
 
             refresh.click(
                 compile_html_downloaded_chara_cards,
@@ -462,6 +467,19 @@ def apply_input_search(search_input: gr.Textbox, allow_nsfw: gr.CheckboxGroup):
     )
 
 
+def search_offline_charas(evt: gr.EventData):
+    search_input: str = evt._data
+    if search_input is None or search_input == "":
+        return gr.update(samples=compile_html_downloaded_chara_cards())
+
+    matches: list[OfflineCharaCard] = []
+    for chara in offline_chara_service.fetch_downloaded_charas():
+        if search_input.lower() in chara.name.lower():
+            matches.append(chara)
+
+    return gr.update(samples=compile_html_downloaded_chara_cards(matches))
+
+
 def change_tab():
     return """
     () => {
@@ -528,8 +546,14 @@ def create_tavernai_chara_display(title: str, samples):
     return slider
 
 
-def compile_html_downloaded_chara_cards():
-    charas = offline_chara_service.fetch_downloaded_charas()
+def compile_html_downloaded_chara_cards(
+    charas: list[OfflineCharaCard] | None = None,
+):
+    charas = (
+        charas
+        if charas is not None
+        else offline_chara_service.fetch_downloaded_charas()
+    )
     html_cards: list[list] = []
 
     chara_el = ['<div class="tavernai_chara_card">', None, "</div>"]
