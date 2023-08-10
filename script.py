@@ -8,13 +8,21 @@ params = {
 }
 
 
-def custom_css():
-    with Path("extensions/webui_tavernai_charas/tavernai_charas_styles.css").open(
+def load_tavernai_resource(path: str):
+    with Path("extensions/webui_tavernai_charas" + path).open(
         "r", encoding="utf-8"
-    ) as css_file:
-        css = css_file.read()
+    ) as f:
+        f = f.read()
 
-    return css
+    return f
+
+
+def custom_css():
+    return load_tavernai_resource("/web/tavernai_charas_styles.css")
+
+
+def custom_js():
+    return load_tavernai_resource("/web/tavernai_notifications.js")
 
 
 def ui():

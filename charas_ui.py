@@ -572,13 +572,11 @@ def compile_html_downloaded_chara_cards(
 def compile_html_online_chara_cards(charas: list[TavernAICard]):
     html_cards: list[list] = []
 
-    chara_el = ['<div class="tavernai_chara_card">', None, "</div>"]
     for c in charas:
         image_el = f'<img src="{c.img_url}">'
         name_el = f"<p>{c.name}</p>"
 
-        element = chara_el.copy()
-        element[1] = image_el + name_el
+        element = f"""<div class="tavernai_chara_card" onclick="notifyCharaDownload('{c.name}')">{image_el + name_el}</div>"""
 
         html_cards.append(["".join(element), json.dumps(c.to_dict())])
 
