@@ -14,6 +14,20 @@ cards.
 
 This extension was made for [oobabooga's text generation webui](https://github.com/oobabooga/text-generation-webui).
 
+## Installation
+You need a little bit of coding knowldge (close to none, but the more the better).
+
+If you used a 'one-click-installer', open the `webui.py` file inside your installation folder. Near the top of the file, you should see some text (variable) containing the words 'CMD_FLAGS = ' + some other stuff. 
+
+To activate the extension, you must add the following to that variable:
+```py
+CMD_FLAGS = "--extensions webui_tavernai_charas"
+```
+
+With this, the extension activates and you will see upon restart of the WebUI a new section with the extension contents.
+
+For more information on how to install and activate users, please refer to the [original documentation by oobaboga](https://github.com/oobabooga/text-generation-webui/blob/main/docs/Extensions.md)
+
 ## Extension screenshots
 
 Main extension page with recent and random cards
