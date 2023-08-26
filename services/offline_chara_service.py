@@ -47,8 +47,8 @@ def fetch_downloaded_charas():
     characters = Path("characters")
     for file in sorted(characters.glob("*")):
         if file.suffix in [".json", ".yml", ".yaml"]:
-            png = characters.joinpath(file.stem + ".png")
-            webp = characters.joinpath(file.stem + ".webp")
+            png = characters.joinpath(f"{file.stem}.png")
+            webp = characters.joinpath(f"{file.stem}.webp")
 
             charas.append(
                 OfflineCharaCard(

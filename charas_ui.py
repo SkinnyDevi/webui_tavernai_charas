@@ -21,6 +21,7 @@ DELETE_CARD_INDEX = offline_chara_service.DeleteCardTracker()
 
 
 def mount_ui():
+    # sourcery skip: extract-method
     with gr.Tabs():
         with gr.TabItem("Online Characters"):
             gr.Markdown("# Online Characters")
@@ -143,7 +144,7 @@ def mount_ui():
                         samples=compile_html_online_chara_cards(
                             TavernAIService.fetch_recent_cards(
                                 amount=-1,
-                                nsfw=True if len(allow_cat_nsfw.value) > 0 else False,
+                                nsfw=len(allow_cat_nsfw.value) > 0,
                             )
                         ),
                         elem_classes=[
@@ -340,7 +341,7 @@ def on_delete_btn(
     card_dropdown: gr.Dropdown,
 ):
     match = re.search(r"\[(\d+)\]", card_dropdown)
-    DELETE_CARD_INDEX.set_index(int(match.group(1)))
+    DELETE_CARD_INDEX.set_index(int(match[1]))
 
     return card_dropdown, gr.update(visible=True)
 
@@ -376,7 +377,7 @@ def filter_by_category(selected: gr.Radio, allow_nsfw: gr.CheckboxGroup):
 def reset_category_filter(allow_nsfw: gr.CheckboxGroup):
     cards = TavernAIService.fetch_recent_cards(-1, len(allow_nsfw) > 0)
 
-    title = f"Selected category: $recent"
+    title = "Selected category: $recent"
 
     return (
         gr.update(value=None),
@@ -397,7 +398,7 @@ def next_category_section(
     cards = TavernAIService.fetch_category_cards(
         category=selected,
         amount=-1,
-        nsfw=True if len(allow_nsfw) > 0 else False,
+        nsfw=len(allow_nsfw) > 0,
         page=current_val,
     )
 
@@ -469,13 +470,14 @@ def apply_input_search(search_input: gr.Textbox, allow_nsfw: gr.CheckboxGroup):
 
 def search_offline_charas(evt: gr.EventData):
     search_input: str = evt._data
-    if search_input is None or search_input == "":
+    if search_input is None or not search_input:
         return gr.update(samples=compile_html_downloaded_chara_cards())
 
-    matches: list[OfflineCharaCard] = []
-    for chara in offline_chara_service.fetch_downloaded_charas():
-        if search_input.lower() in chara.name.lower():
-            matches.append(chara)
+    matches: list[OfflineCharaCard] = [
+        chara
+        for chara in offline_chara_service.fetch_downloaded_charas()
+        if search_input.lower() in chara.name.lower()
+    ]
 
     return gr.update(samples=compile_html_downloaded_chara_cards(matches))
 

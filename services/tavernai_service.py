@@ -8,9 +8,9 @@ import requests
 from PIL import Image, ExifTags
 
 API_URL = "https://tavernai.net"
-CATEGORIES = API_URL + "/api/categories"
-CHARACTERS = API_URL + "/api/characters"
-RECENT_CHARAS = CHARACTERS + "/board"
+CATEGORIES = f"{API_URL}/api/categories"
+CHARACTERS = f"{API_URL}/api/characters"
+RECENT_CHARAS = f"{CHARACTERS}/board"
 
 
 class TavernAICard:
@@ -97,7 +97,7 @@ class TavernAICard:
             entry.get("short_description"),
             entry.get("create_date"),
             entry.get("status"),
-            True if entry.get("nsfw") == 1 else False,
+            entry.get("nsfw") == 1,
         )
 
     def to_dict(self):
@@ -117,7 +117,7 @@ class TavernAICard:
 
     @property
     def img_url(self):
-        return API_URL + f"/{self.user_name}/{self.public_id_short}.webp"
+        return f"{API_URL}/{self.user_name}/{self.public_id_short}.webp"
 
 
 class TavernAICategory:
@@ -161,7 +161,7 @@ class TavernAICategory:
         }
 
     def category_url(self, nsfw=True):
-        return CATEGORIES + f"/{self._name}/characters?nsfw={'on' if nsfw else'off'}"
+        return f"{CATEGORIES}/{self._name}/characters?nsfw={'on' if nsfw else 'off'}"
 
 
 class TavernAIService:
@@ -169,7 +169,7 @@ class TavernAIService:
     def fetch_recent_cards(amount=30, nsfw=True):
         params = TavernAIService.__encode_params(nsfw=nsfw)
         response = requests.get(
-            CATEGORIES + f"/{TavernAIService.__category(recent=True)}{params}"
+            f"{CATEGORIES}/{TavernAIService.__category(recent=True)}{params}"
         ).json()
 
         return TavernAIService.__parseAmount(amount=amount, decoded=response)
@@ -178,7 +178,7 @@ class TavernAIService:
     def fetch_random_cards(amount=30, nsfw=True):
         params = TavernAIService.__encode_params(nsfw=nsfw)
         response = requests.get(
-            CATEGORIES + f"/{TavernAIService.__category(random=True)}{params}"
+            f"{CATEGORIES}/{TavernAIService.__category(random=True)}{params}"
         ).json()
 
         return TavernAIService.__parseAmount(amount=amount, decoded=response)
@@ -187,7 +187,7 @@ class TavernAIService:
     def fetch_category_cards(category: str | None = None, amount=30, nsfw=True, page=1):
         params = TavernAIService.__encode_params(nsfw=nsfw, page=page)
         response = requests.get(
-            CATEGORIES + f"/{TavernAIService.__category(category=category)}{params}"
+            f"{CATEGORIES}/{TavernAIService.__category(category=category)}{params}"
         ).json()
 
         return TavernAIService.__parseAmount(amount=amount, decoded=response)
@@ -204,6 +204,7 @@ class TavernAIService:
         response = requests.get(CHARACTERS + params).json().get("categories")
         fetched_categories = [TavernAICategory.from_dict(c) for c in response]
 
+        # sourcery skip: use-next
         for cat in fetched_categories:
             if name == cat.name:
                 return cat
@@ -235,8 +236,8 @@ class TavernAIService:
     @staticmethod
     def download_card(card: TavernAICard):
         image = requests.get(card.img_url)
-        image_path = Path("characters").joinpath(card.name + ".webp")
-        data_path = Path("characters").joinpath(card.name + ".json")
+        image_path = Path("characters").joinpath(f"{card.name}.webp")
+        data_path = Path("characters").joinpath(f"{card.name}.json")
 
         with image_path.open("wb") as f:
             f.write(image.content)
@@ -254,19 +255,18 @@ class TavernAIService:
 
         # convert to PNG for chat profile display (ooga booga doesn't accept .webp's as profile images)
         Image.open(image_path).convert("RGBA").save(
-            Path("characters").joinpath(card.name + ".png"),
+            Path("characters").joinpath(f"{card.name}.png"),
         )
         # delete original .webp (although it contains the original EXIF data) to not clutter the character folder
         image_path.unlink()
 
     @staticmethod
     def __disect_exif(card_name) -> dict:
-        img = Image.open(Path("characters").joinpath(card_name + ".webp"))
+        img = Image.open(Path("characters").joinpath(f"{card_name}.webp"))
 
-        exif = {}
-        for k, v in img.getexif().items():
-            if k in ExifTags.TAGS:
-                exif[ExifTags.TAGS[k]] = v
+        exif = {
+            ExifTags.TAGS[k]: v for k, v in img.getexif().items() if k in ExifTags.TAGS
+        }
 
         img_bytes: bytes = exif.get("UserComment")
         hex_bytes = list(map(lambda x: hex(int(x))[2:], img_bytes[8:].split(b",")))
@@ -280,7 +280,7 @@ class TavernAIService:
             return f"${'recent' if recent else 'random'}/characters"
 
         if category is None:
-            raise Exception("Category cannot be None")
+            raise ValueError("Category cannot be None")
 
         return f"{TavernAIService.__url_encode(category)}/characters"
 
