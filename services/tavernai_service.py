@@ -619,7 +619,10 @@ class TavernAIPreviewService:
     @staticmethod
     def __format_exif(temp_image_path: Path):
         temp_info = TavernAIPreviewService.__disect_exif(temp_image_path)
-        temp_info["short_description"] = temp_info.pop("personality", "")
+        print(json.dumps(temp_info))
+        temp_info["short_description"] = temp_info.pop(
+            "short_description"
+        ) or temp_info.pop("personality")
         temp_info["char_name"] = temp_info.pop("name")
         temp_info["char_persona"] = temp_info.pop("description")
         temp_info["world_scenario"] = temp_info.pop("scenario")
