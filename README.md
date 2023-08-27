@@ -39,7 +39,7 @@ Search online TavernAI cards
 Advanced search filtering with card categories
 ![SearcherCategories](https://raw.githubusercontent.com/SkinnyDevi/webui_tavernai_charas/master/docs/searcher-categories.png)
 
-Card previews from the card's image URl
+Card previews from the card's image URL
 ![CardPreviewing](https://raw.githubusercontent.com/SkinnyDevi/webui_tavernai_charas/master/docs/card-previewer.png)
 
 Manage your offline cards
