@@ -1,4 +1,6 @@
-/* TAVERNAI CHARAS EXT STYLING */
+/* ********************************* */
+/* ** TAVERNAI CHARAS EXT STYLING ** */
+/* ********************************* */
 
 #tavernai_search_bar > div {
   min-width: 60vw;
@@ -158,4 +160,12 @@
     transform: scale(1, 1);
     -webkit-transform: scale(1, 1);
   }
+}
+
+.tavernai-ext-version {
+  text-align: center;
+}
+
+.tavernai-ext-version > p {
+  color: rgba(255, 255, 255, 0.25) !important;
 }

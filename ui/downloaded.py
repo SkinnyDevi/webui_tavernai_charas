@@ -4,6 +4,7 @@ import gradio as gr
 from modules.shared import gradio
 import modules.ui as ui
 
+import extensions.webui_tavernai_charas.config.version as version
 import extensions.webui_tavernai_charas.services.offline_chara_service as offline_chara_service
 from extensions.webui_tavernai_charas.services.offline_chara_service import (
     OfflineCharaCard,
@@ -216,6 +217,11 @@ def downloaded_ui():
         )
 
         offline_search_bar.change(search_offline_charas, None, downloaded)
+
+        gr.Markdown(
+            f"TavernAI Character Extension - Version {version.__version__}",
+            elem_classes=["tavernai-ext-version"],
+        )
 
     refresh.click(
         compile_html_downloaded_chara_cards,
