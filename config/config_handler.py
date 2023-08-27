@@ -5,12 +5,17 @@ import json
 
 class ConfigHandler:
     path = Path("extensions/webui_tavernai_charas/config/chara_config.json")
+    __instance = None
 
     def __init__(self, json_data: dict):
         self._allow_nsfw: bool = json_data.get("allow_nsfw")
 
     @staticmethod
     def setup():
+        return ConfigHandler.__instance or ConfigHandler.__setup()
+
+    @staticmethod
+    def __setup():
         if ConfigHandler.path.exists():
             with open(ConfigHandler.path, "r", encoding="utf-8") as f:
                 return ConfigHandler(json.load(f))

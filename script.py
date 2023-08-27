@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import extensions.webui_tavernai_charas.charas_ui as charas_ui
+import extensions.webui_tavernai_charas.ui.main as charas_ui
 
 params = {
     "display_name": "TavernAI Characters",
@@ -9,7 +9,7 @@ params = {
 
 
 def load_tavernai_resource(path: str):
-    with Path("extensions/webui_tavernai_charas" + path).open(
+    with Path(f"extensions/webui_tavernai_charas{path}").open(
         "r", encoding="utf-8"
     ) as f:
         f = f.read()
