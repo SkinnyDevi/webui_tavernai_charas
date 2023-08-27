@@ -16,6 +16,10 @@ DELETE_CARD_INDEX = offline_chara_service.DeleteCardTracker()
 def compile_html_downloaded_chara_cards(
     charas: list[OfflineCharaCard] | None = None,
 ):
+    """
+    Gets a list of downloaded cards and returns a list of their respective HTML format.
+    """
+
     charas = (
         charas
         if charas is not None
@@ -37,6 +41,10 @@ def compile_html_downloaded_chara_cards(
 
 
 def select_character(evt: gr.SelectData):
+    """
+    Returns the selected character for use.
+    """
+
     return evt.value[1]
 
 
@@ -63,6 +71,10 @@ def on_cancel_delete_btn():
 
 
 def search_offline_charas(evt: gr.EventData):
+    """
+    Searches dynamically for downloaded characters by name.
+    """
+
     search_input: str = evt._data
     if search_input is None or not search_input:
         return gr.update(samples=compile_html_downloaded_chara_cards())

@@ -1,4 +1,8 @@
 def change_tab():
+    """
+    Clicks on the 'Text generation' tab for direct usage upon character selection.
+    """
+
     return """
     () => {
         var tabButtons = document.evaluate("//button[contains(., 'Text generation')]", document, null, XPathResult.ANY_TYPE, null );
@@ -10,6 +14,10 @@ def change_tab():
 
 
 def hit_all_refreshes():
+    """
+    Refreshes all online carousels.
+    """
+
     return """
     () => {
         var refreshes = document.querySelectorAll(".tavernai_slider_refresh");
@@ -23,6 +31,10 @@ def hit_all_refreshes():
 
 
 def refresh_downloaded():
+    """
+    Refreshes all related information regarding downloaded characters.
+    """
+
     return """
     () => {
         var refreshes = document.querySelectorAll(".tavernai_refresh_downloaded_charas");

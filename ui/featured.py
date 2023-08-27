@@ -14,11 +14,19 @@ CONFIG = ConfigHandler.setup()
 
 
 def download_character(evt: gr.SelectData):
+    """
+    Downloads a selected character to disk.
+    """
+
     card = TavernAICard.from_dict(json.loads(evt.value[1]))
     TavernAIService.download_card(card)
 
 
 def create_tavernai_chara_display(title: str, samples):
+    """
+    Creates a custom carousel for displaying fetched cards.
+    """
+
     with gr.Row():
         gr.Markdown(f"## {title}")
         refresh_button = ui.ToolButton(
@@ -60,6 +68,10 @@ def apply_checkbox(evt: gr.SelectData):
 
 
 def compile_html_online_chara_cards(charas: list[TavernAICard]):
+    """
+    Gets a list of online cards and returns a list of their respective HTML format.
+    """
+
     html_cards: list[list] = []
 
     for c in charas:

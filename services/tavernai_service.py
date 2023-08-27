@@ -14,6 +14,10 @@ RECENT_CHARAS = f"{CHARACTERS}/board"
 
 
 class TavernAICard:
+    """
+    A character card instance for online fetched character cards.
+    """
+
     def __init__(
         self,
         id: int,
@@ -42,50 +46,94 @@ class TavernAICard:
 
     @property
     def id(self):
+        """
+        The card's ID.
+        """
         return self._id
 
     @property
     def public_id(self):
+        """
+        The public card's ID.
+        """
         return self._public_id
 
     @property
     def public_id_short(self):
+        """
+        The first few characters of the card's public ID.
+        """
         return self._public_id_short
 
     @property
     def user_id(self):
+        """
+        ID of the author's username.
+        """
         return self._user_id
 
     @property
     def user_name(self):
+        """
+        Author's username.
+        """
         return self._user_name
 
     @property
     def user_name_view(self):
+        """
+        Author's username for displaying purposes.
+        """
         return self._user_name_view
 
     @property
     def name(self):
+        """
+        Character name.
+        """
         return self._name
 
     @property
     def short_description(self):
+        """
+        Character short description.
+        """
         return self._short_description
 
     @property
     def create_date(self):
+        """
+        Creation date of the card.
+        """
         return self._create_date
 
     @property
     def status(self):
+        """
+        Card's status. Not really used.
+        """
         return self._status
 
     @property
     def nsfw(self):
+        """
+        If the card is SFW or not. Commonly mis-used by the community.
+        """
         return self._nsfw
+
+    @property
+    def img_url(self):
+        """
+        The URL relevant the character's image/portrait.
+        """
+        return f"{API_URL}/{self.user_name}/{self.public_id_short}.webp"
 
     @staticmethod
     def from_dict(entry: dict):
+        """
+        Creates a `TavernAICard` card from a `dict`.
+        """
+
         return TavernAICard(
             entry.get("id"),
             entry.get("public_id"),
@@ -101,6 +149,10 @@ class TavernAICard:
         )
 
     def to_dict(self):
+        """
+        Convert all card information to a `dict`.
+        """
+
         return {
             "id": self.id,
             "public_id": self.public_id,
@@ -115,10 +167,6 @@ class TavernAICard:
             "nsfw": 1 if self.nsfw else 0,
         }
 
-    @property
-    def img_url(self):
-        return f"{API_URL}/{self.user_name}/{self.public_id_short}.webp"
-
 
 class TavernAICategory:
     def __init__(self, id: int, name: str, name_view: str, count: int):
@@ -129,22 +177,38 @@ class TavernAICategory:
 
     @property
     def id(self):
+        """
+        Category's ID.
+        """
         return self._id
 
     @property
     def name(self):
+        """
+        Category name.
+        """
         return self._name
 
     @property
     def name_view(self):
+        """
+        Category name for displaying purposes.
+        """
         return self._name_view
 
     @property
     def count(self):
+        """
+        Amount of characters this category has been linked to.
+        """
         return self._count
 
     @staticmethod
     def from_dict(entry: dict):
+        """
+        Creates a `TavernAICategory` category from a `dict`.
+        """
+
         return TavernAICategory(
             entry.get("id"),
             entry.get("name"),
@@ -153,6 +217,10 @@ class TavernAICategory:
         )
 
     def to_dict(self) -> dict:
+        """
+        Convert all category information to a `dict`.
+        """
+
         return {
             "id": self._id,
             "name": self._name,
@@ -165,8 +233,20 @@ class TavernAICategory:
 
 
 class TavernAIService:
+    """
+    Service regarding all available functions related to the TavernAI API.
+    """
+
     @staticmethod
     def fetch_recent_cards(amount=30, nsfw=True):
+        """
+        Requests the most recent cards.
+
+        Default:
+        - amount = 30
+        - nsfw = `True`
+        """
+
         params = TavernAIService.__encode_params(nsfw=nsfw)
         response = requests.get(
             f"{CATEGORIES}/{TavernAIService.__category(recent=True)}{params}"
@@ -176,6 +256,14 @@ class TavernAIService:
 
     @staticmethod
     def fetch_random_cards(amount=30, nsfw=True):
+        """
+        Requests random cards.
+
+        Default:
+        - amount = 30
+        - nsfw = `True`
+        """
+
         params = TavernAIService.__encode_params(nsfw=nsfw)
         response = requests.get(
             f"{CATEGORIES}/{TavernAIService.__category(random=True)}{params}"
@@ -185,6 +273,16 @@ class TavernAIService:
 
     @staticmethod
     def fetch_category_cards(category: str | None = None, amount=30, nsfw=True, page=1):
+        """
+        Requests cards from a designated category.
+
+        Default:
+        - category = None (will throw error)
+        - amount = 30
+        - nsfw = `True`
+        - page = 1
+        """
+
         params = TavernAIService.__encode_params(nsfw=nsfw, page=page)
         response = requests.get(
             f"{CATEGORIES}/{TavernAIService.__category(category=category)}{params}"
@@ -194,12 +292,20 @@ class TavernAIService:
 
     @staticmethod
     def fetch_catergories():
+        """
+        Requests all available categories
+        """
+
         response = requests.get(CATEGORIES).json()
 
         return [TavernAICategory.from_dict(entry) for entry in response]
 
     @staticmethod
     def fetch_category(name: str):
+        """
+        Requests a category.
+        """
+
         params = TavernAIService.__encode_params(q=name)
         response = requests.get(CHARACTERS + params).json().get("categories")
         fetched_categories = [TavernAICategory.from_dict(c) for c in response]
@@ -213,6 +319,13 @@ class TavernAIService:
 
     @staticmethod
     def fetch_query(query: str, nsfw=True):
+        """
+        Requests a search query.
+
+        Default:
+        - nsfw = `True`
+        """
+
         params = TavernAIService.__encode_params(nsfw=nsfw, q=query)
         response = requests.get(CHARACTERS + params).json().get("characters")
 
@@ -220,6 +333,13 @@ class TavernAIService:
 
     @staticmethod
     def fetch_random_categories(amount=5):
+        """
+        Requests random categories.
+
+        Default:
+        - amount = 5
+        """
+
         response = TavernAIService.fetch_catergories()
 
         categories: list[TavernAICategory] = []
@@ -235,6 +355,10 @@ class TavernAIService:
 
     @staticmethod
     def download_card(card: TavernAICard):
+        """
+        Downloads a card from the API to the disk.
+        """
+
         image = requests.get(card.img_url)
         image_path = Path("characters").joinpath(f"{card.name}.webp")
         data_path = Path("characters").joinpath(f"{card.name}.json")
