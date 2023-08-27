@@ -71,9 +71,8 @@ def clear_preview():
     return tuple(updates)
 
 
-def download_preview():
+def download_preview(chara_name: gr.Textbox):
     TavernAIPreviewService.save_temp_card(CURRENT_PREVIEW_TRACKER.get_card())
-    print("Downloaded previewed card.")
 
     return clear_preview()
 
@@ -169,7 +168,10 @@ def previewer_ui():
         )
 
         components["preview_download_button"].click(
-            download_preview, None, list(get_card_fields())
+            download_preview,
+            components["preview_card_name"],
+            list(get_card_fields()),
+            _js="(name) => notifyCharaDownload(name)",
         )
 
         components["preview_clear_button"].click(

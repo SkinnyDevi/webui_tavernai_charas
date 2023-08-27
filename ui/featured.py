@@ -35,7 +35,7 @@ def on_download_click(
     return gr.update(value=card.name), gr.update(visible=True)
 
 
-def on_confirm_download_btn():
+def on_confirm_download_btn(chara_name: gr.Textbox):
     download_character()
     return gr.update(visible=False)
 
@@ -64,8 +64,9 @@ def confirm_download_card():  # sourcery skip: extract-method
 
             confirm_card_download.click(
                 on_confirm_download_btn,
-                None,
+                download_card_textbox,
                 download_card_box,
+                _js="(name) => notifyCharaDownload(name)",
             )
 
             cancel_card_download.click(
