@@ -55,11 +55,11 @@ def confirm_download_card():  # sourcery skip: extract-method
         with gr.Row(elem_id="tavernai_delete_chara_buttons"):
             cancel_card_download = gr.Button("Cancel", elem_classes="small-button")
             tai_components["preview_card_download"] = gr.Button(
-                "Preview", elem_classes="small-button"
+                "Preview", elem_classes=["small-button", "tavernai_btn_secondary"]
             )
             confirm_card_download = gr.Button(
                 "Download",
-                elem_classes="small-button",
+                elem_classes=["small-button", "tavernai_btn_primary"],
             )
 
             confirm_card_download.click(

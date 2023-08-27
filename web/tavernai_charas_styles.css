@@ -169,3 +169,15 @@
 .tavernai-ext-version > p {
   color: rgba(255, 255, 255, 0.25) !important;
 }
+
+.tavernai_btn_primary {
+  border: var(--button-border-width) solid var(--button-primary-border-color) !important;
+  background: var(--button-primary-background-fill) !important;
+  color: var(--button-primary-text-color) !important;
+}
+
+.tavernai_btn_secondary {
+  border: 1px solid var(--checkbox-label-background-fill) !important;
+  background: #111827 !important;
+  color: white !important;
+}
