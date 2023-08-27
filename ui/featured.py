@@ -313,6 +313,8 @@ def define_search_events(
 
 
 def featured_ui():  # sourcery skip: extract-method
+    gr.Markdown("# Online Characters")
+
     with gr.Tabs():
         with gr.TabItem("Featured"):
             with gr.Row():

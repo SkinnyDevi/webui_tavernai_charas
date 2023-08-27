@@ -1,15 +1,18 @@
-from pathlib import Path
-from random import randint
-import urllib.parse
-
 import json
 import requests
-
+import shutil
+import urllib.parse
+from glob import glob
+from pathlib import Path
+from random import randint
 from PIL import Image, ExifTags
+from typing import Callable
+
 
 API_URL = "https://tavernai.net"
 CATEGORIES = f"{API_URL}/api/categories"
 CHARACTERS = f"{API_URL}/api/characters"
+USERS = f"{API_URL}/api/users"
 RECENT_CHARAS = f"{CHARACTERS}/board"
 
 
@@ -367,9 +370,10 @@ class TavernAIService:
             f.write(image.content)
 
         with data_path.open("w") as data_file:
-            exif = TavernAIService.__disect_exif(card.name)
+            exif = TavernAIService.__disect_exif(card)
 
-            exif["char_name"] = card.name
+            exif["short_description"] = exif.pop("personality", "")
+            exif["char_name"] = exif.pop("name")
             exif["char_persona"] = exif.pop("description")
             exif["world_scenario"] = exif.pop("scenario")
             exif["char_greeting"] = exif.pop("first_mes")
@@ -385,8 +389,8 @@ class TavernAIService:
         image_path.unlink()
 
     @staticmethod
-    def __disect_exif(card_name) -> dict:
-        img = Image.open(Path("characters").joinpath(f"{card_name}.webp"))
+    def __disect_exif(card: TavernAICard) -> dict:
+        img = Image.open(Path("characters").joinpath(f"{card.name}.webp"))
 
         exif = {
             ExifTags.TAGS[k]: v for k, v in img.getexif().items() if k in ExifTags.TAGS
@@ -435,3 +439,205 @@ class TavernAIService:
             kwargs["nsfw"] = "on" if kwargs.get("nsfw") else "off"
 
         return f"?{urllib.parse.urlencode(kwargs, quote_via=urllib.parse.quote)}"
+
+
+class TavernAICardPreview(TavernAICard):
+    """
+    A card instance made specifically for previews.
+    """
+
+    def __init__(
+        self,
+        public_id: str,
+        public_id_short: str,
+        user_name: str,
+        user_name_view: str,
+        name: str,
+        description: str,
+        short_description: str,
+        create_date: str,
+        nsfw: bool,
+        world_scenario: str,
+        greeting: str,
+        example_dialogue: str,
+    ):
+        super().__init__(
+            -1,
+            public_id,
+            public_id_short,
+            -1,
+            user_name,
+            user_name_view,
+            name,
+            short_description,
+            create_date,
+            -1,
+            nsfw,
+        )
+        self._description = description
+        self._world_scenario = world_scenario
+        self._greeting = greeting
+        self._example_dialogue = example_dialogue
+
+    @property
+    def description(self):
+        """
+        Character's behaviour description.
+        """
+        return self._description
+
+    @property
+    def world_scenario(self):
+        """
+        Character's scenario.
+        """
+        return self._world_scenario
+
+    @property
+    def greeting(self):
+        """
+        Character's greeting.
+        """
+        return self._greeting
+
+    @property
+    def example_dialogue(self):
+        """
+        Character's example dialogue.
+        """
+        return self._example_dialogue
+
+    def to_dict(self):
+        d = super().to_dict()
+        d["description"] = self._description
+        d["world_scenario"] = self._world_scenario
+        d["greeting"] = self._greeting
+        d["example_dialogue"] = self._example_dialogue
+
+        return d
+
+    @staticmethod
+    def from_dict(entry: dict):
+        """
+        Creates a `TavernAICardPreview` card from a `dict`.
+        """
+
+        return TavernAICardPreview(
+            entry.get("public_id"),
+            entry.get("public_id_short"),
+            entry.get("user_name"),
+            entry.get("user_name_view"),
+            entry.get("char_name"),
+            entry.get("char_persona"),
+            entry.get("short_description"),
+            entry.get("create_date_online"),
+            entry.get("nsfw"),
+            entry.get("world_scenario"),
+            entry.get("char_greeting"),
+            entry.get("example_dialogue"),
+        )
+
+
+class TavernAIPreviewService:
+    temp_path = Path("extensions/webui_tavernai_charas/temp")
+    """
+    Path used to download and examine cards that are not yet to be downloaded.
+    """
+
+    def __temp_exists_check(func: Callable):
+        def wrapper(*args, **kwargs):
+            if not TavernAIPreviewService.temp_path.exists():
+                TavernAIPreviewService.temp_path.mkdir()
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    @staticmethod
+    @__temp_exists_check
+    def clear_temp():
+        all_caches = glob(
+            str(TavernAIPreviewService.temp_path.joinpath("*").absolute())
+        )
+        for c in all_caches:
+            shutil.rmtree(c)
+
+    @staticmethod
+    @__temp_exists_check
+    def preview_from_img_url(img_url: str):
+        parsed = urllib.parse.urlparse(img_url)
+        user, short_id = parsed.path.split("/")[1:]
+        short_id = short_id.split(".webp")[0]
+
+        response = requests.get(img_url).content
+
+        return TavernAIPreviewService.__create_temp_entry(user, short_id, response)
+
+    @staticmethod
+    @__temp_exists_check
+    def save_temp_card(card: TavernAICard):
+        entry_folder = TavernAIPreviewService.temp_path.joinpath(
+            f"{card.user_name}_{card.public_id_short}"
+        )
+
+        image_path = entry_folder.joinpath(f"{card.public_id_short}.webp")
+        data_path = entry_folder.joinpath(f"{card.name}.json")
+
+        # convert to PNG for chat profile display (ooga booga doesn't accept .webp's as profile images)
+        Image.open(image_path).convert("RGBA").save(
+            Path("characters").joinpath(f"{card.name}.png"),
+        )
+        image_path.unlink()
+
+        shutil.move(
+            str(data_path.absolute()),
+            str(Path(f"characters/{card.name}.json").absolute()),
+        )
+
+        entry_folder.rmdir()
+
+    @staticmethod
+    def __create_temp_entry(username: str, short_id: str, image: bytes):
+        entry_folder = TavernAIPreviewService.temp_path.joinpath(
+            f"{username}_{short_id}"
+        )
+
+        if not entry_folder.exists():
+            entry_folder.mkdir()
+
+        temp_image_path = entry_folder.joinpath(f"{short_id}.webp")
+        with open(temp_image_path, "wb") as webp_file:
+            webp_file.write(image)
+
+        temp_info = TavernAIPreviewService.__format_exif(temp_image_path)
+        temp_info_path = entry_folder.joinpath(f"{temp_info['char_name']}.json")
+        with open(temp_info_path, "w") as data_file:
+            data_file.write(json.dumps(temp_info))
+
+        return TavernAICardPreview.from_dict(temp_info)
+
+    @staticmethod
+    def __format_exif(temp_image_path: Path):
+        temp_info = TavernAIPreviewService.__disect_exif(temp_image_path)
+        temp_info["short_description"] = temp_info.pop("personality", "")
+        temp_info["char_name"] = temp_info.pop("name")
+        temp_info["char_persona"] = temp_info.pop("description")
+        temp_info["world_scenario"] = temp_info.pop("scenario")
+        temp_info["char_greeting"] = temp_info.pop("first_mes")
+        temp_info["example_dialogue"] = temp_info.pop("mes_example")
+
+        return temp_info
+
+    @staticmethod
+    def __disect_exif(path: Path) -> dict:
+        img = Image.open(path)
+
+        exif = {
+            ExifTags.TAGS[k]: v for k, v in img.getexif().items() if k in ExifTags.TAGS
+        }
+
+        img_bytes: bytes = exif.get("UserComment")
+        hex_bytes = list(map(lambda x: hex(int(x))[2:], img_bytes[8:].split(b",")))
+
+        chara_data = bytearray.fromhex(" ".join(hex_bytes).upper()).decode("utf-8")
+        return json.loads(chara_data)
