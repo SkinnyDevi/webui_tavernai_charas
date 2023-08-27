@@ -39,5 +39,22 @@ Search online TavernAI cards
 Advanced search filtering with card categories
 ![SearcherCategories](https://raw.githubusercontent.com/SkinnyDevi/webui_tavernai_charas/master/docs/searcher-categories.png)
 
+Card previews from the card's image URl
+![CardPreviewing](https://raw.githubusercontent.com/SkinnyDevi/webui_tavernai_charas/master/docs/card-previewer.png)
+
 Manage your offline cards
-![offlineCardManager](https://raw.githubusercontent.com/SkinnyDevi/webui_tavernai_charas/master/docs/offline-cards.png)
+![OfflineCardManager](https://raw.githubusercontent.com/SkinnyDevi/webui_tavernai_charas/master/docs/offline-cards.png)
+
+
+## Changelog
+
+### [1.1.0]
+Features:
+- Added versioning
+- Implemented a Card Preview tab that allows the user to preview a card's content through it's image URL
+- Added a prompt before downloading to specify if the card wants to be previewed before downloading
+
+Fixes:
+* Split the main `charas_ui.py` file into submodules for readability
+* Added a commonplace for all components
+* General fixes, refactorings and improvements to the code base

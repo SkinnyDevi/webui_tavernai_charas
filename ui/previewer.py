@@ -138,7 +138,7 @@ def define_card_details():
 
 
 def previewer_ui():
-    gr.Markdown("# Card Previwer")
+    gr.Markdown("# Card Previewer")
 
     with gr.Column():
         with gr.Row(elem_id="tavernai_search_bar"):
