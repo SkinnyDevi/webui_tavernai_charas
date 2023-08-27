@@ -21,8 +21,19 @@ function notifyCharaDownload(charaName) {
   }, 3000);
 }
 
+function dispatchNotifyCharaDownload(charaName) {
+  window.dispatchEvent(
+    new CustomEvent("notify_chara_download", { detail: { name: charaName } })
+  );
+}
+
 const tavernscript = document.createElement("script");
 
-tavernscript.innerHTML = notifyCharaDownload.toString();
+tavernscript.innerHTML =
+  notifyCharaDownload.toString() +
+  dispatchNotifyCharaDownload.toString() +
+  `window.addEventListener('notify_chara_download', (evt) => {
+		notifyCharaDownload(evt.detail.name)
+	})`;
 
 document.head.appendChild(tavernscript);

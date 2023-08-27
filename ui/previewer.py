@@ -3,23 +3,9 @@ from urllib import parse
 
 from extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIPreviewService,
-    TavernAICardPreview,
+    PreviewCardTracker,
 )
 from extensions.webui_tavernai_charas.ui.shared import components
-
-
-class PreviewCardTracker:
-    def __init__(self):
-        self.__card: TavernAICardPreview = None
-
-    def set_card(self, c: TavernAICardPreview):
-        self.__card = c
-
-    def get_card(self) -> TavernAICardPreview | None:
-        return self.__card
-
-    def reset(self):
-        self.__card = None
 
 
 CURRENT_PREVIEW_TRACKER = PreviewCardTracker()
@@ -53,43 +39,6 @@ def get_card_fields():
         creation_date,
         image_field,
     )
-
-
-def update_preview_from_external(card_img_url: str = None):
-    if card_img_url is None:
-        raise ValueError("No card was passed to preview")
-
-    preview = TavernAIPreviewService.preview_from_img_url(card_img_url)
-    CURRENT_PREVIEW_TRACKER.set_card(preview)
-    card = CURRENT_PREVIEW_TRACKER.get_card()
-
-    (
-        name,
-        nsfw,
-        author,
-        short_description,
-        description,
-        world_scenario,
-        greeting,
-        example_dialogue,
-        short_id,
-        long_id,
-        creation_date,
-        image_field,
-    ) = get_card_fields()
-
-    name.update(value=card.name)
-    author.update(value=card.user_name_view)
-    nsfw.update(value="Yes" if card.nsfw else "No")
-    short_description.update(value=card.short_description)
-    description.update(value=card.description)
-    world_scenario.update(value=card.world_scenario)
-    greeting.update(value=card.greeting)
-    example_dialogue.update(value=card.example_dialogue)
-    short_id.update(value=card.public_id_short)
-    long_id.update(value=card.public_id)
-    creation_date.update(value=card.create_date)
-    image_field.update(value=card.img_url)
 
 
 def search_by_url(url: gr.Textbox):
@@ -200,9 +149,11 @@ def previewer_ui():
                 interactive=True,
             )
 
-            components["preview_search_button"] = gr.Button("Search")
+            components["preview_search_button"] = gr.Button(
+                "Search", elem_id="tavernai_preview_search_button"
+            )
             components["preview_download_button"] = gr.Button("Download")
-            components["preview_clear_button"] = gr.Button("Clear")
+            components["preview_clear_button"] = gr.Button("Clear stored previews")
 
         with gr.Row():
             with gr.Column(scale=5):
@@ -220,6 +171,7 @@ def previewer_ui():
         components["preview_download_button"].click(
             download_preview, None, list(get_card_fields())
         )
+
         components["preview_clear_button"].click(
             clear_preview, None, list(get_card_fields())
         )

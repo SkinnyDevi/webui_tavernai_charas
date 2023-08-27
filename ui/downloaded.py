@@ -132,33 +132,6 @@ def downloaded_ui():
         delete_card_box = confirm_delete_box[0]
         delete_card_textbox = confirm_delete_box[1]
 
-        with gr.Box(visible=False, elem_classes="file-saver") as delete_card_box:
-            delete_card_textbox = gr.Textbox(
-                lines=1,
-                label="You are about to delete this card:",
-                interactive=False,
-            )
-            with gr.Row(elem_id="tavernai_delete_chara_buttons"):
-                confirm_card_delete = gr.Button(
-                    "Delete",
-                    elem_classes="small-button",
-                    variant="stop",
-                )
-                cancel_card_delete = gr.Button("Cancel", elem_classes="small-button")
-
-                confirm_card_delete.click(
-                    on_confirm_delete_btn,
-                    None,
-                    delete_card_box,
-                    _js=nfn.refresh_downloaded(),
-                )
-
-                cancel_card_delete.click(
-                    on_cancel_delete_btn,
-                    None,
-                    delete_card_box,
-                )
-
         with gr.Row(elem_id="tavernai_downloaded_handlers"):
             with gr.Column():
                 with gr.Row():

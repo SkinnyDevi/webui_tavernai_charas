@@ -13,6 +13,24 @@ def change_tab():
     """
 
 
+def change_and_search_preview():
+    """
+    Clicks on the 'Card Previewer' tab for direct card preview.
+    """
+
+    return """
+    () => {
+        var tabButtons = document.evaluate("//*[@id='tavernai_ext_tabs']/div[1]/button[2]", document, null, XPathResult.ANY_TYPE, null );
+        var previewer = tabButtons.iterateNext();
+
+        previewer.click();
+        
+        var searchBtn = document.getElementById('tavernai_preview_search_button');
+        setTimeout(() => searchBtn.click(), 250);
+    }
+    """
+
+
 def hit_all_refreshes():
     """
     Refreshes all online carousels.

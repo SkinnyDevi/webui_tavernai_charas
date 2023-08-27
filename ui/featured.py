@@ -1,28 +1,83 @@
 import json
 import gradio as gr
+from typing import Callable
 
 import modules.ui as ui
 
 from extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIService,
     TavernAICard,
+    DownloadCardTracker,
 )
 from extensions.webui_tavernai_charas.config.config_handler import ConfigHandler
+from extensions.webui_tavernai_charas.ui.shared import components as tai_components
 import extensions.webui_tavernai_charas.ui.native_fn as nfn
 
 CONFIG = ConfigHandler.setup()
+DOWNLOAD_CARD_TRACKER = DownloadCardTracker()
 
 
-def download_character(evt: gr.SelectData):
+def download_character():
     """
     Downloads a selected character to disk.
     """
 
-    card = TavernAICard.from_dict(json.loads(evt.value[1]))
+    card = DOWNLOAD_CARD_TRACKER.get_card()
     TavernAIService.download_card(card)
+    DOWNLOAD_CARD_TRACKER.reset()
 
 
-def create_tavernai_chara_display(title: str, samples):
+def on_download_click(
+    evt: gr.SelectData,
+):
+    card = TavernAICard.from_dict(json.loads(evt.value[1]))
+    DOWNLOAD_CARD_TRACKER.set_card(card)
+    return gr.update(value=card.name), gr.update(visible=True)
+
+
+def on_confirm_download_btn():
+    download_character()
+    return gr.update(visible=False)
+
+
+def on_cancel_download_btn():
+    DOWNLOAD_CARD_TRACKER.reset()
+    return gr.update(visible=False)
+
+
+def confirm_download_card():  # sourcery skip: extract-method
+    with gr.Box(visible=False, elem_classes="file-saver") as download_card_box:
+        download_card_textbox = gr.Textbox(
+            lines=1,
+            label="You are about to download this card:",
+            interactive=False,
+        )
+        with gr.Row(elem_id="tavernai_delete_chara_buttons"):
+            cancel_card_download = gr.Button("Cancel", elem_classes="small-button")
+            tai_components["preview_card_download"] = gr.Button(
+                "Preview", elem_classes="small-button"
+            )
+            confirm_card_download = gr.Button(
+                "Download",
+                elem_classes="small-button",
+            )
+
+            confirm_card_download.click(
+                on_confirm_download_btn,
+                None,
+                download_card_box,
+            )
+
+            cancel_card_download.click(
+                on_cancel_download_btn,
+                None,
+                download_card_box,
+            )
+
+    return download_card_box, download_card_textbox
+
+
+def create_tavernai_chara_display(title: str, samples: Callable):
     """
     Creates a custom carousel for displaying fetched cards.
     """
@@ -46,7 +101,11 @@ def create_tavernai_chara_display(title: str, samples):
         samples_per_page=30,
     )
 
-    slider.select(download_character, None, None)
+    slider.select(
+        on_download_click,
+        None,
+        [tai_components["download_card_textbox"], tai_components["download_card_box"]],
+    )
 
     # copied from ui.create_refresh_button method
     def refresh():
@@ -77,8 +136,11 @@ def compile_html_online_chara_cards(charas: list[TavernAICard]):
     for c in charas:
         image_el = f'<img src="{c.img_url}">'
         name_el = f"<p>{c.name}</p>"
+        btn_notify_el = (
+            f"""<button onclick="notifyCharaDownload('{c.name}')"><button>"""
+        )
 
-        element = f"""<div class="tavernai_chara_card" onclick="notifyCharaDownload('{c.name}')">{image_el + name_el}</div>"""
+        element = f"""<div class="tavernai_chara_card">{image_el + name_el + btn_notify_el}</div>"""
 
         html_cards.append(["".join(element), json.dumps(c.to_dict())])
 
@@ -309,13 +371,21 @@ def define_search_events(
         ],
     )
 
-    search_results.select(download_character, None, None)
+    search_results.select(
+        on_download_click,
+        None,
+        [tai_components["download_card_textbox"], tai_components["download_card_box"]],
+    )
 
 
 def featured_ui():  # sourcery skip: extract-method
     gr.Markdown("# Online Characters")
 
     with gr.Tabs():
+        confirm_delete_box = confirm_download_card()
+        tai_components["download_card_box"] = confirm_delete_box[0]
+        tai_components["download_card_textbox"] = confirm_delete_box[1]
+
         with gr.TabItem("Featured"):
             with gr.Row():
                 nsfw_check = gr.CheckboxGroup(

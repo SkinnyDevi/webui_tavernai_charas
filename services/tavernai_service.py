@@ -641,3 +641,37 @@ class TavernAIPreviewService:
 
         chara_data = bytearray.fromhex(" ".join(hex_bytes).upper()).decode("utf-8")
         return json.loads(chara_data)
+
+
+class PreviewCardTracker:
+    def __init__(self):
+        self.__card: TavernAICardPreview = None
+
+    def set_card(self, c: TavernAICardPreview):
+        self.__card = c
+
+    def get_card(self) -> TavernAICardPreview | None:
+        return self.__card
+
+    def reset(self):
+        self.__card = None
+
+
+class DownloadCardTracker:
+    def __init__(self):
+        self.__card: TavernAICard = None
+
+    def __new__(cls):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(DownloadCardTracker, cls).__new__(cls)
+
+        return cls.instance
+
+    def set_card(self, c: TavernAICard):
+        self.__card = c
+
+    def get_card(self) -> TavernAICard | None:
+        return self.__card
+
+    def reset(self):
+        self.__card = None
