@@ -300,8 +300,8 @@ class TavernAIService:
         """
 
         response = requests.get(CATEGORIES).json()
-
-        return [TavernAICategory.from_dict(entry) for entry in response]
+        categories = [TavernAICategory.from_dict(entry) for entry in response]
+        return sorted(categories, key=lambda cat: cat.name)
 
     @staticmethod
     def fetch_category(name: str):
