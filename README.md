@@ -49,6 +49,13 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.1.1]
+Features:
+* Implemented an update checker that displays a button inside the Downloaded Characters' tab, allowing the user to download and install the update with one click
+
+Fixes:
+* Categories in the Online Character Searcher tab now are displayed by alphabetical order
+
 ### [1.1.0]
 Features:
 - Added versioning
