@@ -1,6 +1,11 @@
-from pathlib import Path
+__version__ = "1.1.1"
+"""
+This extension's version.
+"""
+
 
 import json
+from pathlib import Path
 
 
 class ConfigHandler:
@@ -13,6 +18,11 @@ class ConfigHandler:
 
     def __init__(self, json_data: dict):
         self._allow_nsfw: bool = json_data.get("allow_nsfw")
+
+        local_version: str = json_data.get("version")
+        self._version: str = (
+            __version__ if local_version != __version__ else local_version
+        )
 
     @staticmethod
     def setup():
@@ -28,7 +38,7 @@ class ConfigHandler:
             with open(ConfigHandler.path, "r", encoding="utf-8") as f:
                 return ConfigHandler(json.load(f))
 
-        new_config = ConfigHandler({"allow_nsfw": True})
+        new_config = ConfigHandler({"allow_nsfw": True, "version": __version__})
         new_config.save()
 
         return new_config
@@ -48,6 +58,13 @@ class ConfigHandler:
         self._allow_nsfw = allow
         self.save()
 
+    @property
+    def version(self):
+        """
+        The extension's version.
+        """
+        return self._version
+
     def save(self):
         """
         Save the config with the existing values to disk.
@@ -61,4 +78,4 @@ class ConfigHandler:
         Returns all available configs as a `dict`.
         """
 
-        return {"allow_nsfw": self._allow_nsfw}
+        return {"allow_nsfw": self._allow_nsfw, "version": self._version}

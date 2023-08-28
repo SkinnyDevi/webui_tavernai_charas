@@ -2,9 +2,11 @@ import re
 import gradio as gr
 
 from modules.shared import gradio
+from modules.github import clone_or_pull_repository
 import modules.ui as ui
 
-import extensions.webui_tavernai_charas.config.version as version
+from extensions.webui_tavernai_charas.config.config_handler import ConfigHandler
+from extensions.webui_tavernai_charas.config.update_manager import ExtUpdateManager
 import extensions.webui_tavernai_charas.services.offline_chara_service as offline_chara_service
 from extensions.webui_tavernai_charas.services.offline_chara_service import (
     OfflineCharaCard,
@@ -12,6 +14,7 @@ from extensions.webui_tavernai_charas.services.offline_chara_service import (
 import extensions.webui_tavernai_charas.ui.native_fn as nfn
 
 DELETE_CARD_INDEX = offline_chara_service.DeleteCardTracker()
+CONFIG = ConfigHandler.setup()
 
 
 def compile_html_downloaded_chara_cards(
@@ -87,6 +90,34 @@ def search_offline_charas(evt: gr.EventData):
     ]
 
     return gr.update(samples=compile_html_downloaded_chara_cards(matches))
+
+
+def create_ext_updater():
+    update_btn = gr.Button(
+        "There is an update available. Click here to download",
+        elem_classes=["tavernai_btn_primary", "tavernai-download-update-btn"],
+    )
+    status = gr.Markdown()
+    repo = gr.Textbox(
+        visible=False,
+        value="https://github.com/SkinnyDevi/webui_tavernai_charas",
+    )
+    restart_webui = gr.Markdown(
+        "Please restart your WebUI using the restart button in the Sessions tab.",
+        elem_classes=["tavernai-ext-update"],
+        visible=False,
+    )
+
+    update_btn.click(
+        clone_or_pull_repository,
+        repo,
+        status,
+        show_progress=True,
+    ).then(
+        lambda: (gr.update(visible=False), gr.update(visible=True)),
+        None,
+        [status, restart_webui],
+    )
 
 
 def confirm_delete_card():
@@ -181,6 +212,9 @@ def downloaded_ui():
                         ],
                     )
 
+        if ExtUpdateManager.check_for_updates(CONFIG):
+            create_ext_updater()
+
         downloaded = gr.Dataset(
             components=[gr.HTML(visible=False)],
             label="",
@@ -192,7 +226,7 @@ def downloaded_ui():
         offline_search_bar.change(search_offline_charas, None, downloaded)
 
         gr.Markdown(
-            f"TavernAI Character Extension - Version {version.__version__}",
+            f"TavernAI Character Extension - Version {CONFIG.version}",
             elem_classes=["tavernai-ext-version"],
         )
 
