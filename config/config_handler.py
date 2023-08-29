@@ -21,11 +21,7 @@ class ConfigHandler:
         Check and updates the local version in the config file.
         """
 
-        local_version = (
-            str(json_data.get("version"))
-            if json_data.get("version") is not None
-            else None
-        )
+        local_version: str | None = json_data.get("version")
 
         if local_version is None:
             return __version__
