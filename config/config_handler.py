@@ -1,4 +1,4 @@
-__version__ = "1.1.1"
+__version__ = "1.2.1"
 """
 This extension's version.
 """
@@ -16,18 +16,37 @@ class ConfigHandler:
     path = Path("extensions/webui_tavernai_charas/config/chara_config.json")
     __instance = None
 
+    def __local_version_fixer(self, json_data: dict):
+        """
+        Check and updates the local version in the config file.
+        """
+
+        local_version = (
+            str(json_data.get("version"))
+            if json_data.get("version") is not None
+            else None
+        )
+
+        if local_version is None:
+            return __version__
+
+        if __version__ == local_version:
+            return __version__
+
+        with open(ConfigHandler.path, "w", encoding="utf-8") as f:
+            json_data["version"] = __version__
+            f.write(json.dumps(json_data))
+
+        return __version__
+
     def __init__(self, json_data: dict):
         self._allow_nsfw: bool = json_data.get("allow_nsfw")
-
-        local_version: str = json_data.get("version")
-        self._version: str = (
-            __version__ if local_version != __version__ else local_version
-        )
+        self._version = self.__local_version_fixer(json_data)
 
     @staticmethod
     def setup():
         """
-        Returna a Singleton instance of this extension's config.
+        Returns a Singleton instance of this extension's config.
         """
 
         return ConfigHandler.__instance or ConfigHandler.__setup()
@@ -38,7 +57,7 @@ class ConfigHandler:
             with open(ConfigHandler.path, "r", encoding="utf-8") as f:
                 return ConfigHandler(json.load(f))
 
-        new_config = ConfigHandler({"allow_nsfw": True, "version": __version__})
+        new_config = ConfigHandler({"allow_nsfw": True})
         new_config.save()
 
         return new_config

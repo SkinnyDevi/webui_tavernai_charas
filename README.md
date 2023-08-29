@@ -49,6 +49,13 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.2.1]
+Features:
+- Added a search bar to search for categories in the Online Character Search tab
+
+Fixes:
+* Implemented a check for fixing disparity between the local extension's version and the local config's last recorded version
+
 ### [1.1.1]
 Features:
 * Implemented an update checker that displays a button inside the Downloaded Characters' tab, allowing the user to download and install the update with one click

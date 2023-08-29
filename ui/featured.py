@@ -7,6 +7,7 @@ import modules.ui as ui
 from extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIService,
     TavernAICard,
+    TavernAICategory,
     DownloadCardTracker,
 )
 from extensions.webui_tavernai_charas.config.config_handler import ConfigHandler
@@ -239,6 +240,7 @@ def reset_category_filter(allow_nsfw: gr.CheckboxGroup):
         gr.update(value=""),
         gr.update(interactive=True),
         gr.update(interactive=True),
+        gr.update(value=""),
     )
 
 
@@ -313,6 +315,20 @@ def mount_random_categories():
     )
 
 
+def search_categories(evt: gr.EventData, all_categories: gr.State):
+    search: str = evt._data
+
+    if search is None or not search:
+        return gr.update(choices=[cat.name for cat in all_categories])
+
+    all_categories: TavernAICategory = all_categories
+    result: list[TavernAICategory] = [
+        cat for cat in all_categories if cat.name.find(search) != -1
+    ]
+
+    return gr.update(choices=[cat.name for cat in result])
+
+
 def define_search_events(
     allow_cat_nsfw: gr.CheckboxGroup,
     search_btn: gr.Button,
@@ -323,6 +339,7 @@ def define_search_events(
     search_results: gr.Dataset,
     current_section: gr.Label,
     search_bar: gr.Textbox,
+    category_searcher: gr.Textbox,
 ):
     allow_cat_nsfw.select(
         toggle_category_nsfw,
@@ -358,6 +375,7 @@ def define_search_events(
             search_bar,
             section_next,
             section_previous,
+            category_searcher,
         ],
     )
 
@@ -370,6 +388,10 @@ def define_search_events(
             section_next,
             section_previous,
         ],
+    )
+
+    category_searcher.change(
+        search_categories, tai_components["common_category_fetch"], [category_choices]
     )
 
     search_results.select(
@@ -429,8 +451,19 @@ def featured_ui():  # sourcery skip: extract-method
                 )
 
                 with gr.Accordion("Categories", open=False):
+                    tai_components["common_category_fetch"] = gr.State(
+                        TavernAIService.fetch_catergories()
+                    )
+                    category_searcher = gr.Textbox(
+                        placeholder="Search categories by name",
+                        show_label=False,
+                        interactive=True,
+                    )
                     category_choices = gr.Radio(
-                        [cat.name for cat in TavernAIService.fetch_catergories()],
+                        [
+                            cat.name
+                            for cat in tai_components["common_category_fetch"].value
+                        ],
                         elem_classes=["tavernai_categories"],
                         label="",
                     )
@@ -471,4 +504,5 @@ def featured_ui():  # sourcery skip: extract-method
                 search_results,
                 current_section,
                 search_bar,
+                category_searcher,
             )
