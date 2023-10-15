@@ -49,6 +49,11 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.2.2]
+Fixes:
+* Updated to the latest WebUI
+* Patched errors related to removed functions
+
 ### [1.2.1]
 Features:
 - Added a search bar to search for categories in the Online Character Search tab

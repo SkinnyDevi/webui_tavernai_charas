@@ -199,8 +199,8 @@ def downloaded_ui():
                             "tavernai_refresh_downloaded_charas",
                         ],
                     )
-                    delete_card_btn = ui.create_delete_button(
-                        elem_classes=["refresh-button"]
+                    delete_card_btn = gr.Button(
+                        ui.delete_symbol, elem_classes=["refresh-button"]
                     )
 
                     delete_card_btn.click(

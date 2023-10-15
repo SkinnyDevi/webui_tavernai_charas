@@ -86,7 +86,7 @@ def create_tavernai_chara_display(title: str, samples: Callable):
 
     with gr.Row():
         gr.Markdown(f"## {title}")
-        refresh_button = ui.ToolButton(
+        refresh_button = gr.Button(
             value=ui.refresh_symbol,
             elem_classes=[
                 "refresh-button",
