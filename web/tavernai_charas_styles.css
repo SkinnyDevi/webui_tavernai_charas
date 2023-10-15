@@ -32,7 +32,7 @@
 }
 
 .tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-thumb {
-  background: var(--body-background-fill);
+  background: var(--button-secondary-border-color);
   border-radius: 100vh;
 }
 
@@ -86,8 +86,8 @@
   height: 50px;
 }
 
-#tavernai_result_pages > div > div > div.output-class {
-  padding: 0;
+#tavernai_result_pages_number_display > div.container > h2 {
+  padding: 0 !important;
 }
 
 .tavernai_chara_card {

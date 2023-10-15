@@ -49,6 +49,10 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.2.3]
+Fixes:
+* Fixed some styling issues within the extension
+
 ### [1.2.2]
 Fixes:
 * Updated to the latest WebUI

@@ -47,7 +47,7 @@ def on_cancel_download_btn():
 
 
 def confirm_download_card():  # sourcery skip: extract-method
-    with gr.Box(visible=False, elem_classes="file-saver") as download_card_box:
+    with gr.Group(visible=False, elem_classes="file-saver") as download_card_box:
         download_card_textbox = gr.Textbox(
             lines=1,
             label="You are about to download this card:",
@@ -470,7 +470,11 @@ def featured_ui():  # sourcery skip: extract-method
 
             with gr.Row(variant="panel", elem_id="tavernai_result_pages"):
                 section_previous = gr.Button("Previous section")
-                current_section = gr.Label(1, label="Current Section")
+                current_section = gr.Label(
+                    1,
+                    label="Current Section",
+                    elem_id="tavernai_result_pages_number_display",
+                )
                 section_next = gr.Button("Next section")
 
             search_results = gr.Dataset(
