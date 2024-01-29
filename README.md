@@ -49,6 +49,11 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.2.4]
+Fixes:
+* Resolves issue #8 and #9 discovered by @drago87. Thanks for the support!
+* Works correctly with the latest version of text-generation-webui (29/01/2024)
+
 ### [1.2.3]
 Fixes:
 * Fixed some styling issues within the extension

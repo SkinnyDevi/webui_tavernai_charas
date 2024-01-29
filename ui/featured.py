@@ -390,6 +390,10 @@ def define_search_events(
         ],
     )
 
+    category_choices.select(
+        lambda: None, [], [], _js=nfn.online_search_default_page_one()
+    )
+
     category_searcher.change(
         search_categories, tai_components["common_category_fetch"], [category_choices]
     )
@@ -486,6 +490,7 @@ def featured_ui():  # sourcery skip: extract-method
                         nsfw=len(allow_cat_nsfw.value) > 0,
                     )
                 ),
+                elem_id="tavernai_online_search_results",
                 elem_classes=[
                     "tavernai_downloaded_container",
                     "tavernai_result_set",

@@ -61,3 +61,19 @@ def refresh_downloaded():
         }
     }
     """
+
+
+def online_search_default_page_one():
+    """
+    Always selects page 1 on the result dataset.
+    """
+
+    return """
+    () => {
+        setTimeout(() => {
+            const dataset_pages = document.querySelector("#tavernai_online_search_results > div.paginate");
+            
+            if (dataset_pages.children.length > 0) dataset_pages.children[0].click();    
+        }, 300);
+    }
+    """
