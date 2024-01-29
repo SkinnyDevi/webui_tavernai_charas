@@ -225,7 +225,7 @@ def previous_category_section(
             samples=compile_html_online_chara_cards(cards)
         )
 
-    return gr.update(value=1), lambda: None
+    return gr.update(value=1), gr.update(label=f"Selected category: {selected}")
 
 
 def reset_category_filter(allow_nsfw: gr.CheckboxGroup):
