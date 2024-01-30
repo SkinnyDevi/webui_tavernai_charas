@@ -51,7 +51,7 @@ Manage your offline cards
 
 ### [1.2.4]
 Fixes:
-* Resolves issue #8 and #9 discovered by @drago87. Thanks for the support!
+* Resolves issue [#8](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/8) and [#9](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/9) discovered by [@drago87](https://github.com/drago87). Thanks for the support!
 * Works correctly with the latest version of text-generation-webui (29/01/2024)
 
 ### [1.2.3]
