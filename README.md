@@ -49,6 +49,13 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.3.0]
+Features:
+- Implements a recent preview dropdown list in the Card Preview tab (suggested by [@TheInvisibleMage](https://github.com/TheInvisibleMage) in issue [#7](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/7)). Thank you for the suggestion!
+
+Fixes:
+* Resolves a styling issue with the loader bar in the download notification.
+
 ### [1.2.4]
 Fixes:
 * Resolves issue [#8](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/8) and [#9](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/9) discovered by [@drago87](https://github.com/drago87). Thanks for the support!
