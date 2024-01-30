@@ -1,9 +1,14 @@
+import os
 import gradio as gr
-from urllib import parse
+from pathlib import Path
 
+import modules.ui as ui
+
+import extensions.webui_tavernai_charas.ui.native_fn as nfn
 from extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIPreviewService,
     PreviewCardTracker,
+    TavernAICardPreview,
 )
 from extensions.webui_tavernai_charas.ui.shared import components
 
@@ -41,12 +46,7 @@ def get_card_fields():
     )
 
 
-def search_by_url(url: gr.Textbox):
-    url: str = url
-    preview = TavernAIPreviewService.preview_from_img_url(url)
-    CURRENT_PREVIEW_TRACKER.set_card(preview)
-    card = CURRENT_PREVIEW_TRACKER.get_card()
-
+def update_preview_slots(card: TavernAICardPreview):
     return (
         gr.update(value=card.name),
         gr.update(value=card.user_name_view),
@@ -63,6 +63,37 @@ def search_by_url(url: gr.Textbox):
     )
 
 
+def search_by_url(url: gr.Textbox):
+    url: str = url
+    preview = TavernAIPreviewService.preview_from_img_url(url)
+    CURRENT_PREVIEW_TRACKER.set_card(preview)
+
+    return update_preview_slots(CURRENT_PREVIEW_TRACKER.get_card())
+
+
+def search_by_temp(temp_entry: gr.Dropdown):
+    name = temp_entry.split("[")[0].strip()
+    identifier = temp_entry.split("[")[1][:-1]
+    preview = TavernAIPreviewService.preview_from_temp(name, identifier)
+    CURRENT_PREVIEW_TRACKER.set_card(preview)
+
+    return update_preview_slots(CURRENT_PREVIEW_TRACKER.get_card())
+
+
+def get_temp_card_names():
+    temp_path = Path("extensions/webui_tavernai_charas/temp")
+    temp_path_charas = os.listdir(temp_path)
+
+    chara_names = []
+    for chara in temp_path_charas:
+        files = os.listdir(temp_path.joinpath(chara))
+        json_file = list(filter(lambda x: ".json" in x, files))[0]
+
+        chara_names.append(f'{json_file.split(".json")[0]} [{chara}]')
+
+    return chara_names
+
+
 def clear_preview():
     TavernAIPreviewService.clear_temp()
     CURRENT_PREVIEW_TRACKER.reset()
@@ -74,7 +105,8 @@ def clear_preview():
 def download_preview(chara_name: gr.Textbox):
     TavernAIPreviewService.save_temp_card(CURRENT_PREVIEW_TRACKER.get_card())
 
-    return clear_preview()
+    updates = [gr.update(value=None) for _ in get_card_fields()]
+    return tuple(updates)
 
 
 def define_card_details():
@@ -163,8 +195,43 @@ def previewer_ui():
                     label="Card Image", interactive=False
                 )
 
+                chara_info = get_temp_card_names()
+                components["recent_previews_dropdown"] = gr.Dropdown(
+                    choices=chara_info,
+                    value=chara_info[0] if len(chara_info) > 0 else None,
+                    interactive=True,
+                    label="Recent previews",
+                    elem_classes=["slim-dropdown"],
+                )
+
+                with gr.Row():
+                    components["load_preview_from_dropdown_btn"] = gr.Button(
+                        "Load recent preview"
+                    )
+
+                    ui.create_refresh_button(
+                        components["recent_previews_dropdown"],
+                        lambda: None,
+                        lambda: {
+                            "choices": get_temp_card_names(),
+                            "value": get_temp_card_names()[0]
+                            if len(get_temp_card_names()) > 0
+                            else None,
+                        },
+                        [
+                            "refresh-button",
+                            "tavernai_card_preview_refresh_recent_dropdown",
+                        ],
+                    )
+
         components["preview_search_button"].click(
             search_by_url, components["preview_url_searcher"], list(get_card_fields())
+        )
+
+        components["load_preview_from_dropdown_btn"].click(
+            search_by_temp,
+            components["recent_previews_dropdown"],
+            list(get_card_fields()),
         )
 
         components["preview_download_button"].click(
@@ -175,5 +242,8 @@ def previewer_ui():
         )
 
         components["preview_clear_button"].click(
-            clear_preview, None, list(get_card_fields())
+            clear_preview,
+            None,
+            list(get_card_fields()),
+            _js=nfn.refresh_recent_preview_dropdown(),
         )

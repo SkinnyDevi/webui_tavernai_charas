@@ -63,6 +63,21 @@ def refresh_downloaded():
     """
 
 
+def refresh_recent_preview_dropdown():
+    """
+    Refreshes all related information regarding downloaded characters.
+    """
+
+    return """
+    () => {
+        var refreshes = document.querySelectorAll(".tavernai_card_preview_refresh_recent_dropdown");
+        for (let r of refreshes) {
+            setTimeout(() => r.click(), 250);
+        }
+    }
+    """
+
+
 def online_search_default_page_one():
     """
     Always selects page 1 on the result dataset.

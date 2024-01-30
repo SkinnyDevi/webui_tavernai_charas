@@ -1,5 +1,6 @@
 import json
 import requests
+import os
 import shutil
 import urllib.parse
 from glob import glob
@@ -572,6 +573,21 @@ class TavernAIPreviewService:
         response = requests.get(img_url).content
 
         return TavernAIPreviewService.__create_temp_entry(user, short_id, response)
+
+    @staticmethod
+    @__temp_exists_check
+    def preview_from_temp(name: str, temp_identifier: str):
+        temp_cards = os.listdir(TavernAIPreviewService.temp_path)
+
+        if temp_identifier in temp_cards:
+            data_file = TavernAIPreviewService.temp_path.joinpath(
+                temp_identifier
+            ).joinpath(f"{name}.json")
+
+            with open(data_file, "r") as df:
+                json_data_file = json.loads(df.read())
+
+            return TavernAICardPreview.from_dict(json_data_file)
 
     @staticmethod
     @__temp_exists_check
