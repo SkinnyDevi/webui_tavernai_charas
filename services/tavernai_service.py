@@ -556,6 +556,11 @@ class TavernAIPreviewService:
 
     @staticmethod
     @__temp_exists_check
+    def get_temp_charas_raw():
+        return os.listdir(TavernAIPreviewService.temp_path)
+
+    @staticmethod
+    @__temp_exists_check
     def clear_temp():
         all_caches = glob(
             str(TavernAIPreviewService.temp_path.joinpath("*").absolute())

@@ -18,16 +18,21 @@ This extension was made for [oobabooga's text generation webui](https://github.c
 ## Installation
 You need a little bit of coding knowldge (close to none, but the more the better).
 
-If you used a 'one-click-installer', open the `webui.py` file inside your installation folder. Near the top of the file, you should see some text (variable) containing the words 'CMD_FLAGS = ' + some other stuff. 
+If you used a 'one-click-installer', open the `CMD_FLAGS.txt` file inside your installation folder.
 
-To activate the extension, you must add the following to that variable:
-```py
-CMD_FLAGS = "--extensions webui_tavernai_charas"
+To activate the extension, you must add the following to an existing line or new line (if no other startup flags are used):
+```
+--extensions webui_tavernai_charas
 ```
 
 With this, the extension activates and you will see upon restart of the WebUI a new section with the extension contents.
 
 For more information on how to install and activate users, please refer to the [original documentation by oobaboga](https://github.com/oobabooga/text-generation-webui/blob/main/docs/Extensions.md)
+
+## Support me!
+This extension takes some time to make, and I love working on it and fixing it for the community.
+
+Want to support my development? Donate me over [Paypal](https://paypal.me/skinnydevi)!
 
 ## Extension screenshots
 
@@ -48,6 +53,13 @@ Manage your offline cards
 
 
 ## Changelog
+
+### [1.3.1]
+Fixes:
+* Fixes issue [#10](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/10) where temp folder wasn't being checked if it was created. Discovered by [@lisea2017](https://github.com/lisea2017) and [@Gamefriend996](https://github.com/Gamefriend996). Thank you for the support!
+
+Additional:
+* Added a [donate](https://paypal.me/skinnydevi) button below extension version.
 
 ### [1.3.0]
 Features:

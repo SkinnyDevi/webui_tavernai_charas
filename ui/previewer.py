@@ -1,6 +1,5 @@
 import os
 import gradio as gr
-from pathlib import Path
 
 import modules.ui as ui
 
@@ -81,12 +80,11 @@ def search_by_temp(temp_entry: gr.Dropdown):
 
 
 def get_temp_card_names():
-    temp_path = Path("extensions/webui_tavernai_charas/temp")
-    temp_path_charas = os.listdir(temp_path)
+    temp_path_charas = TavernAIPreviewService.get_temp_charas_raw()
 
     chara_names = []
     for chara in temp_path_charas:
-        files = os.listdir(temp_path.joinpath(chara))
+        files = os.listdir(TavernAIPreviewService.temp_path.joinpath(chara))
         json_file = list(filter(lambda x: ".json" in x, files))[0]
 
         chara_names.append(f'{json_file.split(".json")[0]} [{chara}]')
@@ -214,9 +212,11 @@ def previewer_ui():
                         lambda: None,
                         lambda: {
                             "choices": get_temp_card_names(),
-                            "value": get_temp_card_names()[0]
-                            if len(get_temp_card_names()) > 0
-                            else None,
+                            "value": (
+                                get_temp_card_names()[0]
+                                if len(get_temp_card_names()) > 0
+                                else None
+                            ),
                         },
                         [
                             "refresh-button",

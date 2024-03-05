@@ -229,6 +229,14 @@ def downloaded_ui():
             f"TavernAI Character Extension - Version {CONFIG.version}",
             elem_classes=["tavernai-ext-version"],
         )
+        gr.Markdown(
+            "Have any issues or feature request? Report them [here](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/new/choose).",
+            elem_classes=["tavernai-ext-version"],
+        )
+        gr.Markdown(
+            "Want to support my development? [Donate](https://paypal.me/skinnydevi) to me here! Thank you! :)",
+            elem_classes=["tavernai-ext-version"],
+        )
 
     refresh.click(
         compile_html_downloaded_chara_cards,
