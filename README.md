@@ -68,6 +68,12 @@ Features:
 Fixes:
 * Resolves a styling issue with the loader bar in the download notification.
 
+<details>
+
+<summary>
+<h3>Past changelog</h3>
+</summary>
+
 ### [1.2.4]
 Fixes:
 * Resolves issue [#8](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/8) and [#9](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/9) discovered by [@drago87](https://github.com/drago87). Thanks for the support!
@@ -99,10 +105,12 @@ Fixes:
 ### [1.1.0]
 Features:
 - Added versioning
-- Implemented a Card Preview tab that allows the user to preview a card's content through it's image URL
+- Implemented a Card Preview tab that allows the user to preview a card's content through it's image URL. This refers to issue [#2](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/2). Thank you to [@mykeehu](https://github.com/mykeehu) for the suggestion!
 - Added a prompt before downloading to specify if the card wants to be previewed before downloading
 
 Fixes:
 * Split the main `charas_ui.py` file into submodules for readability
 * Added a commonplace for all components
 * General fixes, refactorings and improvements to the code base
+
+</details>
