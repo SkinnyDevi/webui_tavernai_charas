@@ -54,6 +54,11 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.3.2]
+Fixes:
+* Fixes issue [#11](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/11) where TavernAI API's changed and would not fetch categories correctly, breaking the extension. Thank you to [@baptisterajaut](https://github.com/baptisterajaut) for the bug report and others for helping out!
+* Fixed a styling bug in the character delete dropdown in the Downloaded tab.
+
 ### [1.3.1]
 Fixes:
 * Fixes issue [#10](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/10) where temp folder wasn't being checked if it was created. Discovered by [@lisea2017](https://github.com/lisea2017) and [@Gamefriend996](https://github.com/Gamefriend996). Thank you for the support!
@@ -61,18 +66,19 @@ Fixes:
 Additional:
 * Added a [donate](https://paypal.me/skinnydevi) button below extension version.
 
-### [1.3.0]
-Features:
-- Implements a recent preview dropdown list in the Card Preview tab (suggested by [@TheInvisibleMage](https://github.com/TheInvisibleMage) in issue [#7](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/7)). Thank you for the suggestion!
-
-Fixes:
-* Resolves a styling issue with the loader bar in the download notification.
 
 <details>
 
 <summary>
 <h3>Past changelog</h3>
 </summary>
+
+### [1.3.0]
+Features:
+- Implements a recent preview dropdown list in the Card Preview tab (suggested by [@TheInvisibleMage](https://github.com/TheInvisibleMage) in issue [#7](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/7)). Thank you for the suggestion!
+
+Fixes:
+* Resolves a styling issue with the loader bar in the download notification.
 
 ### [1.2.4]
 Fixes:
