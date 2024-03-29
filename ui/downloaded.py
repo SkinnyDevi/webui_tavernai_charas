@@ -181,7 +181,7 @@ def downloaded_ui():
                         value=f"[0] {get_local_cards()[0].name}",
                         interactive=True,
                         label="Delete a character",
-                        elem_classes=["slim-dropdown"],
+                        elem_classes=["slim-dropdown tavernai_chara_dropdown_delete"],
                     )
                     all_cards.container = False
                     ui.create_refresh_button(

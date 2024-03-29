@@ -201,3 +201,10 @@
   background: #111827 !important;
   color: white !important;
 }
+
+.tavernai_chara_dropdown_delete > label > div,
+.tavernai_chara_dropdown_delete > label > div > div,
+.tavernai_chara_dropdown_delete > label > div > div > div,
+.tavernai_chara_dropdown_delete > label > div > div > div > input {
+  height: auto !important;
+}

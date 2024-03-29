@@ -290,7 +290,7 @@ class TavernAIService:
         params = TavernAIService.__encode_params(nsfw=nsfw, page=page)
         response = requests.get(
             f"{CATEGORIES}/{TavernAIService.__category(category=category)}{params}"
-        ).json()
+        ).json()["results"]
 
         return TavernAIService.__parseAmount(amount=amount, decoded=response)
 
