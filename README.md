@@ -54,10 +54,21 @@ Manage your offline cards
 
 ## Changelog
 
+### [1.3.3]
+Fixes:
+* Fixes issue [#14](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/14) where some labels had changed getter behaivour. Thank you to [@przewodo](https://github.com/przewodo) for the bug report!
+* Checked extension functionality for WebUI latest update.
+
 ### [1.3.2]
 Fixes:
 * Fixes issue [#11](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/11) where TavernAI API's changed and would not fetch categories correctly, breaking the extension. Thank you to [@baptisterajaut](https://github.com/baptisterajaut) for the bug report and others for helping out!
 * Fixed a styling bug in the character delete dropdown in the Downloaded tab.
+
+<details>
+
+<summary>
+<h3>Past changelog</h3>
+</summary>
 
 ### [1.3.1]
 Fixes:
@@ -65,13 +76,6 @@ Fixes:
 
 Additional:
 * Added a [donate](https://paypal.me/skinnydevi) button below extension version.
-
-
-<details>
-
-<summary>
-<h3>Past changelog</h3>
-</summary>
 
 ### [1.3.0]
 Features:

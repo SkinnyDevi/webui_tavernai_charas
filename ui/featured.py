@@ -163,7 +163,7 @@ def toggle_category_nsfw(
             category=selected_cat,
             amount=-1,
             nsfw=allow,
-            page=int(current_section.get("label")),
+            page=int(current_section),
         )
     else:
         cards = TavernAIService.fetch_query(search_input, allow)
@@ -190,7 +190,7 @@ def apply_input_search(search_input: gr.Textbox, allow_nsfw: gr.CheckboxGroup):
 def next_category_section(
     selected: gr.Radio, allow_nsfw: gr.CheckboxGroup, current: gr.Label
 ):
-    current_val = int(current.get("label")) + 1
+    current_val = int(current) + 1
     selected = "$recent" if selected is None else selected
 
     cards = TavernAIService.fetch_category_cards(
@@ -208,7 +208,7 @@ def next_category_section(
 def previous_category_section(
     selected: gr.Radio, allow_nsfw: gr.CheckboxGroup, current: gr.Label
 ):
-    current_val = int(current.get("label"))
+    current_val = int(current)
     selected = "$recent" if selected is None else selected
 
     if current_val > 1:
