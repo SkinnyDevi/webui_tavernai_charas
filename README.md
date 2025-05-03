@@ -3,6 +3,9 @@
 This extension features a character searcher, downloader and manager for any TavernAI
 cards.
 
+> [!CAUTION]
+> Version 2+ of this extension has been adapted to work with Oobabooga's WebUI version 3+. Please update your installation as this will be the supported version from now on. If you have a previous version of this extension, make sure to either: update the extension and WebUI or not update the extension.
+
 ## General features
 - Main page recent and random cards, as well as random categories upon main page launch
 - Card filtering with text search, NSFW blocking* and category filtering
@@ -19,6 +22,8 @@ This extension was made for [oobabooga's text generation webui](https://github.c
 You need a little bit of coding knowldge (close to none, but the more the better).
 
 If you used a 'one-click-installer', open the `CMD_FLAGS.txt` file inside your installation folder.
+
+If you used the 'portable' version or newer, you can find `CMD_FLAGS.txt` inside the `user_data` folder.
 
 To activate the extension, you must add the following to an existing line or new line (if no other startup flags are used):
 ```
@@ -54,21 +59,31 @@ Manage your offline cards
 
 ## Changelog
 
+### [2.0.0]
+
+> [!CAUTION]
+> Version 2.0.0 has been adapted to work with Oobabooga's WebUI version 3+. Please update your installation as this will be the supported version from now on.
+
+Fixes:
+* Adapated the `characters` path to search inside `user_data/characters` correctly.
+* Fixed date field when previewing a card: it now shows correct date and time of creation instead of number timestamp.
+* Various style fixes for new theme colors.
+
 ### [1.3.3]
 Fixes:
 * Fixes issue [#14](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/14) where some labels had changed getter behaivour. Thank you to [@przewodo](https://github.com/przewodo) for the bug report!
 * Checked extension functionality for WebUI latest update.
-
-### [1.3.2]
-Fixes:
-* Fixes issue [#11](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/11) where TavernAI API's changed and would not fetch categories correctly, breaking the extension. Thank you to [@baptisterajaut](https://github.com/baptisterajaut) for the bug report and others for helping out!
-* Fixed a styling bug in the character delete dropdown in the Downloaded tab.
 
 <details>
 
 <summary>
 <h3>Past changelog</h3>
 </summary>
+
+### [1.3.2]
+Fixes:
+* Fixes issue [#11](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/11) where TavernAI API's changed and would not fetch categories correctly, breaking the extension. Thank you to [@baptisterajaut](https://github.com/baptisterajaut) for the bug report and others for helping out!
+* Fixed a styling bug in the character delete dropdown in the Downloaded tab.
 
 ### [1.3.1]
 Fixes:

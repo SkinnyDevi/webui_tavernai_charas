@@ -1,4 +1,4 @@
-__version__ = "1.3.3"
+__version__ = "2.0.0"
 """
 This extension's version.
 """
@@ -7,13 +7,14 @@ This extension's version.
 import json
 from pathlib import Path
 
+EXTENSION_PATH = Path("extensions")
 
 class ConfigHandler:
     """
     Config class for any configurations needed for the extension.
     """
 
-    path = Path("extensions/webui_tavernai_charas/config/chara_config.json")
+    path = EXTENSION_PATH.joinpath(Path("webui_tavernai_charas/config/chara_config.json"))
     __instance = None
 
     def __local_version_fixer(self, json_data: dict):

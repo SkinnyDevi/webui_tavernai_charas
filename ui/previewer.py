@@ -1,4 +1,5 @@
 import os
+import datetime
 import gradio as gr
 
 import modules.ui as ui
@@ -57,7 +58,7 @@ def update_preview_slots(card: TavernAICardPreview):
         gr.update(value=card.example_dialogue),
         gr.update(value=card.public_id_short),
         gr.update(value=card.public_id),
-        gr.update(value=card.create_date),
+        gr.update(value=datetime.datetime.fromtimestamp(int(card.create_date) / 1e3)),
         gr.update(value=card.img_url),
     )
 
@@ -153,6 +154,10 @@ def define_card_details():
         lines=7,
         label="Example dialogue",
     )
+    
+    components["preview_card_creation_date"] = gr.Textbox(
+        interactive=False, lines=1, label="Creation date"
+    )
 
     components["preview_card_short_id"] = gr.Textbox(
         interactive=False, lines=1, label="Short id"
@@ -160,10 +165,6 @@ def define_card_details():
 
     components["preview_card_long_id"] = gr.Textbox(
         interactive=False, lines=1, label="Long id"
-    )
-
-    components["preview_card_creation_date"] = gr.Textbox(
-        interactive=False, lines=1, label="Creation date"
     )
 
 

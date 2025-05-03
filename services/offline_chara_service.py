@@ -1,6 +1,7 @@
 from pathlib import Path
 from modules.html_generator import get_image_cache
 
+CHARACTER_PATH = Path("user_data/characters")
 
 class OfflineCharaCard:
     """
@@ -72,7 +73,7 @@ def fetch_downloaded_charas():
     """
 
     charas: list[OfflineCharaCard] = []
-    characters = Path("characters")
+    characters = CHARACTER_PATH
     for file in sorted(characters.glob("*")):
         if file.suffix in [".json", ".yml", ".yaml"]:
             png = characters.joinpath(f"{file.stem}.png")

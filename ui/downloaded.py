@@ -239,11 +239,7 @@ def downloaded_ui():
         )
 
     refresh.click(
-        compile_html_downloaded_chara_cards,
+        lambda: gr.Dataset(samples=compile_html_downloaded_chara_cards()),
         [],
         downloaded,
-    )
-
-    downloaded.select(
-        select_character, None, gradio["character_menu"], _js=nfn.change_tab()
     )

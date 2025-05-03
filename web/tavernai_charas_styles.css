@@ -2,209 +2,211 @@
 /* ** TAVERNAI CHARAS EXT STYLING ** */
 /* ********************************* */
 
-#tavernai_search_bar > div {
-  min-width: 60vw;
+#tavernai_search_bar>div {
+	min-width: 60vw;
 }
 
 #tavernai_delete_chara_buttons {
-  margin-top: 10px;
-  align-items: center;
-  justify-content: center;
+	margin-top: 10px;
+	align-items: center;
+	justify-content: center;
 }
 
 #tavernai_downloaded_handlers {
-  align-items: center;
-  justify-content: center;
+	align-items: center;
+	justify-content: center;
 }
 
-.tavernai_downloaded_container > div:nth-child(2) {
-  justify-content: center;
+.tavernai_downloaded_container>div:nth-child(2) {
+	justify-content: center;
 }
 
-.tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+.tavernai_downloaded_container>div:nth-child(2)::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
 }
 
-.tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-track {
-  border-radius: 100vh;
-  background: #1f2937;
+.tavernai_downloaded_container>div:nth-child(2)::-webkit-scrollbar-track {
+	border-radius: 100vh;
+	background: var(--body-background);
 }
 
-.tavernai_downloaded_container > div:nth-child(2)::-webkit-scrollbar-thumb {
-  background: var(--button-secondary-border-color);
-  border-radius: 100vh;
+.tavernai_downloaded_container>div:nth-child(2)::-webkit-scrollbar-thumb {
+	background: var(--button-secondary-border-color);
+	border-radius: 100vh;
 }
 
-.tavernai_downloaded_container
-  > div:nth-child(2)::-webkit-scrollbar-thumb:hover {
-  background: var(--table-row-focus);
+.tavernai_downloaded_container>div:nth-child(2)::-webkit-scrollbar-thumb:hover {
+	background: var(--table-row-focus);
 }
 
-.tavernai_downloaded_container > div.label,
-.tavernai_card_display > div.label {
-  display: none !important;
+.tavernai_downloaded_container>div.label,
+.tavernai_card_display>div.label {
+	display: none !important;
 }
 
-.tavernai_result_set > div.label {
-  display: flex !important;
+.tavernai_result_set>div.label {
+	display: flex !important;
 }
 
 .tavernai_card_display {
-  padding: 5px;
-  background-color: #1f2937;
-  border-radius: 8px;
-  border: var(--block-border-width) solid var(--border-color-primary);
+	padding: 5px;
+	background-color: var(--darker-gray);
+	border-radius: 8px;
+	border: var(--block-border-width) solid var(--border-color-primary);
 }
 
 /* aka: tavern_card_slider */
-.tavernai_card_display > div:nth-child(2) {
-  display: block !important;
-  height: 320px !important;
-  overflow-x: scroll !important;
-  white-space: nowrap !important;
+.tavernai_card_display>div:nth-child(2) {
+	display: block !important;
+	height: 320px !important;
+	overflow-x: scroll !important;
+	white-space: nowrap !important;
 }
 
 .tavernai_result_set {
-  padding: 5px;
-  background-color: #1f2937;
-  border-radius: 8px;
-  border: var(--block-border-width) solid var(--border-color-primary);
+	padding: 5px;
+	background-color: var(--body-background);
+	border-radius: 8px;
+	border: var(--block-border-width) solid var(--border-color-primary);
 }
 
-.tavernai_result_set > div:nth-child(2) {
-  overflow-x: scroll !important;
-  white-space: nowrap !important;
+.tavernai_result_set>div:nth-child(2) {
+	overflow-x: scroll !important;
+	white-space: nowrap !important;
 }
 
 .tavernai_categories {
-  height: 28rem;
-  overflow-x: auto !important;
+	height: 28rem;
+	overflow-x: auto !important;
 }
 
-#tavernai_result_pages > * {
-  height: 50px;
+#tavernai_result_pages>* {
+	height: 50px;
 }
 
-#tavernai_result_pages_number_display > div.container > h2 {
-  padding: 0 !important;
+#tavernai_result_pages_number_display>div.container>h2 {
+	padding: 0 !important;
 }
 
 .tavernai_chara_card {
-  width: 250px;
-  height: 265px;
+	width: 250px;
+	height: 265px;
 }
 
-.tavernai_chara_card > img {
-  width: 225px;
-  height: 225px;
-  background-color: gray;
-  object-fit: cover;
-  margin: 0 auto;
-  border-radius: 1rem;
-  margin-bottom: 10px;
-  border: 3px solid #354091f9;
+.tavernai_chara_card>img {
+	width: 225px;
+	height: 225px;
+	background-color: gray;
+	object-fit: cover;
+	margin: 0 auto;
+	border-radius: 1rem;
+	margin-bottom: 10px;
+	border: 3px solid #354091f9;
 }
 
-.tavernai_chara_card > p {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-weight: bold;
-  font-size: 20px;
+.tavernai_chara_card>p {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-weight: bold;
+	font-size: 20px;
 }
 
 .tavernai-notification {
-  position: absolute;
-  border: 1px solid grey;
-  border-radius: 10px 10px 0 0;
-  width: 350px;
-  height: 75px;
-  right: 35px;
-  top: 40px;
-  background-color: var(--block-background-fill);
-  border-color: var(--block-border-color);
-  z-index: 2;
-  color: var(--body-text-color);
-  font-family: var(--font);
+	position: absolute;
+	border: 1px solid grey;
+	border-radius: 10px 10px 0 0;
+	width: 350px;
+	height: 75px;
+	right: 35px;
+	top: 40px;
+	background-color: var(--input-background-fill);
+	border-color: var(--block-border-color);
+	z-index: 2;
+	color: var(--body-text-color);
+	font-family: var(--font);
 }
 
-.tavernai-notification > h2 {
-  margin: 0 !important;
-  margin-left: 16px !important;
-  font-weight: bold;
-  margin-top: 5px !important;
+.tavernai-notification>h2 {
+	margin: 0 !important;
+	margin-left: 16px !important;
+	font-weight: bold;
+	margin-top: 5px !important;
 }
 
-.tavernai-notification > p {
-  margin: 0 !important;
-  margin-left: 16px !important;
-  margin-top: 5px !important;
+.tavernai-notification>p {
+	margin: 0 !important;
+	margin-left: 16px !important;
+	margin-top: 5px !important;
 }
 
 .tavernai-notification-timer {
-  margin-top: 7px;
-  width: 100%;
-  height: 3px;
-  background-color: grey;
-  animation: 3s notif-timer;
+	margin-top: 7px;
+	width: 100%;
+	height: 3px;
+	background-color: grey;
+	animation: 3s notif-timer;
 }
 
 @keyframes notif-timer {
-  0% {
-    transform: scale(0, 1);
-    -webkit-transform: scale(0, 1);
-  }
+	0% {
+		transform: scale(0, 1);
+		-webkit-transform: scale(0, 1);
+	}
 
-  100% {
-    transform: scale(1, 1);
-    -webkit-transform: scale(1, 1);
-  }
+	100% {
+		transform: scale(1, 1);
+		-webkit-transform: scale(1, 1);
+	}
 }
 
 .tavernai-ext-version {
-  text-align: center;
+	text-align: center;
 }
 
-.tavernai-ext-version > p {
-  color: rgba(255, 255, 255, 0.25) !important;
+.tavernai-ext-version>p {
+	color: rgba(255, 255, 255, 0.25) !important;
 }
 
 .tavernai-ext-update {
-  text-align: center;
+	text-align: center;
 }
 
-.tavernai-ext-update > p {
-  color: rgba(255, 255, 255, 0.65) !important;
+.tavernai-ext-update>p {
+	color: rgba(255, 255, 255, 0.65) !important;
 }
 
 .tavernai-download-update-btn {
-  min-width: 0 !important;
-  max-width: 402px;
-  height: 39.594px;
-  align-self: center;
+	min-width: 0 !important;
+	max-width: 402px;
+	height: 39.594px;
+	align-self: center;
 }
 
 .tavernai_btn_primary {
-  border: var(--button-border-width) solid var(--button-primary-border-color) !important;
-  background: var(--button-primary-background-fill) !important;
-  color: var(--button-primary-text-color) !important;
+	border: var(--button-border-width) solid var(--button-primary-border-color) !important;
+	background: var(--button-primary-background-fill) !important;
+	color: var(--button-primary-text-color) !important;
 }
 
 .tavernai_btn_primary:hover {
-  border: var(--button-border-width) solid rgba(249, 117, 22, 0.8) !important;
-  background: rgba(249, 117, 22, 0.8) !important;
+	border: var(--button-border-width) solid rgba(249, 117, 22, 0.8) !important;
+	background: rgba(249, 117, 22, 0.8) !important;
 }
 
 .tavernai_btn_secondary {
-  border: 1px solid var(--checkbox-label-background-fill) !important;
-  background: #111827 !important;
-  color: white !important;
+	border: 1px solid var(--checkbox-label-background-fill) !important;
+	color: white !important;
 }
 
-.tavernai_chara_dropdown_delete > label > div,
-.tavernai_chara_dropdown_delete > label > div > div,
-.tavernai_chara_dropdown_delete > label > div > div > div,
-.tavernai_chara_dropdown_delete > label > div > div > div > input {
-  height: auto !important;
+.tavernai_btn_secondary:hover {
+	background: #111827 !important;
+}
+
+.tavernai_chara_dropdown_delete>label>div,
+.tavernai_chara_dropdown_delete>label>div>div,
+.tavernai_chara_dropdown_delete>label>div>div>div,
+.tavernai_chara_dropdown_delete>label>div>div>div>input {
+	height: auto !important;
 }

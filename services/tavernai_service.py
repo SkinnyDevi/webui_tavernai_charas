@@ -9,6 +9,8 @@ from random import randint
 from PIL import Image, ExifTags
 from typing import Callable
 
+from extensions.webui_tavernai_charas.services.offline_chara_service import CHARACTER_PATH
+
 
 API_URL = "https://tavernai.net"
 CATEGORIES = f"{API_URL}/api/categories"
@@ -364,8 +366,8 @@ class TavernAIService:
         """
 
         image = requests.get(card.img_url)
-        image_path = Path("characters").joinpath(f"{card.name}.webp")
-        data_path = Path("characters").joinpath(f"{card.name}.json")
+        image_path = CHARACTER_PATH.joinpath(f"{card.name}.webp")
+        data_path = CHARACTER_PATH.joinpath(f"{card.name}.json")
 
         with image_path.open("wb") as f:
             f.write(image.content)
@@ -384,14 +386,14 @@ class TavernAIService:
 
         # convert to PNG for chat profile display (ooga booga doesn't accept .webp's as profile images)
         Image.open(image_path).convert("RGBA").save(
-            Path("characters").joinpath(f"{card.name}.png"),
+            CHARACTER_PATH.joinpath(f"{card.name}.png"),
         )
         # delete original .webp (although it contains the original EXIF data) to not clutter the character folder
         image_path.unlink()
 
     @staticmethod
     def __disect_exif(card: TavernAICard) -> dict:
-        img = Image.open(Path("characters").joinpath(f"{card.name}.webp"))
+        img = Image.open(CHARACTER_PATH.joinpath(f"{card.name}.webp"))
 
         exif = {
             ExifTags.TAGS[k]: v for k, v in img.getexif().items() if k in ExifTags.TAGS
@@ -606,13 +608,13 @@ class TavernAIPreviewService:
 
         # convert to PNG for chat profile display (ooga booga doesn't accept .webp's as profile images)
         Image.open(image_path).convert("RGBA").save(
-            Path("characters").joinpath(f"{card.name}.png"),
+            CHARACTER_PATH.joinpath(f"{card.name}.png"),
         )
         image_path.unlink()
 
         shutil.move(
             str(data_path.absolute()),
-            str(Path(f"characters/{card.name}.json").absolute()),
+            str(CHARACTER_PATH.joinpath(Path(f"{card.name}.json")).absolute()),
         )
 
         entry_folder.rmdir()
