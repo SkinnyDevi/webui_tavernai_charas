@@ -1,11 +1,11 @@
 import gradio as gr
 
-import extensions.webui_tavernai_charas.ui.native_fn as nfn
-from extensions.webui_tavernai_charas.ui.featured import featured_ui
-from extensions.webui_tavernai_charas.ui.downloaded import downloaded_ui
-from extensions.webui_tavernai_charas.ui.previewer import previewer_ui
-from extensions.webui_tavernai_charas.ui.shared import components
-from extensions.webui_tavernai_charas.services.tavernai_service import (
+import user_data.extensions.webui_tavernai_charas.ui.native_fn as nfn
+from user_data.extensions.webui_tavernai_charas.ui.featured import featured_ui
+from user_data.extensions.webui_tavernai_charas.ui.downloaded import downloaded_ui
+from user_data.extensions.webui_tavernai_charas.ui.previewer import previewer_ui
+from user_data.extensions.webui_tavernai_charas.ui.shared import components
+from user_data.extensions.webui_tavernai_charas.services.tavernai_service import (
     DownloadCardTracker,
 )
 

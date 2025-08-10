@@ -2,16 +2,22 @@ import re
 import gradio as gr
 
 from modules.shared import gradio
-from modules.github import clone_or_pull_repository
 import modules.ui as ui
 
-from extensions.webui_tavernai_charas.config.config_handler import ConfigHandler
-from extensions.webui_tavernai_charas.config.update_manager import ExtUpdateManager
-import extensions.webui_tavernai_charas.services.offline_chara_service as offline_chara_service
-from extensions.webui_tavernai_charas.services.offline_chara_service import (
+from user_data.extensions.webui_tavernai_charas.config.legacy_github import (
+    clone_or_pull_repository,
+)
+from user_data.extensions.webui_tavernai_charas.config.config_handler import (
+    ConfigHandler,
+)
+from user_data.extensions.webui_tavernai_charas.config.update_manager import (
+    ExtUpdateManager,
+)
+import user_data.extensions.webui_tavernai_charas.services.offline_chara_service as offline_chara_service
+from user_data.extensions.webui_tavernai_charas.services.offline_chara_service import (
     OfflineCharaCard,
 )
-import extensions.webui_tavernai_charas.ui.native_fn as nfn
+import user_data.extensions.webui_tavernai_charas.ui.native_fn as nfn
 
 DELETE_CARD_INDEX = offline_chara_service.DeleteCardTracker()
 CONFIG = ConfigHandler.setup()

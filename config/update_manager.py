@@ -1,6 +1,8 @@
 import requests
 
-from extensions.webui_tavernai_charas.config.config_handler import ConfigHandler
+from user_data.extensions.webui_tavernai_charas.config.config_handler import (
+    ConfigHandler,
+)
 
 
 class ExtUpdateManager:

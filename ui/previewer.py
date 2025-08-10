@@ -4,13 +4,13 @@ import gradio as gr
 
 import modules.ui as ui
 
-import extensions.webui_tavernai_charas.ui.native_fn as nfn
-from extensions.webui_tavernai_charas.services.tavernai_service import (
+import user_data.extensions.webui_tavernai_charas.ui.native_fn as nfn
+from user_data.extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIPreviewService,
     PreviewCardTracker,
     TavernAICardPreview,
 )
-from extensions.webui_tavernai_charas.ui.shared import components
+from user_data.extensions.webui_tavernai_charas.ui.shared import components
 
 
 CURRENT_PREVIEW_TRACKER = PreviewCardTracker()
@@ -88,7 +88,7 @@ def get_temp_card_names():
         files = os.listdir(TavernAIPreviewService.temp_path.joinpath(chara))
         json_file = list(filter(lambda x: ".json" in x, files))[0]
 
-        chara_names.append(f'{json_file.split(".json")[0]} [{chara}]')
+        chara_names.append(f"{json_file.split('.json')[0]} [{chara}]")
 
     return chara_names
 
@@ -154,7 +154,7 @@ def define_card_details():
         lines=7,
         label="Example dialogue",
     )
-    
+
     components["preview_card_creation_date"] = gr.Textbox(
         interactive=False, lines=1, label="Creation date"
     )

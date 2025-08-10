@@ -7,6 +7,7 @@ cards.
 > Version 2+ of this extension has been adapted to work with Oobabooga's WebUI version 3+. Please update your installation as this will be the supported version from now on. If you have a previous version of this extension, make sure to either: update the extension and WebUI or not update the extension.
 
 ## General features
+
 - Main page recent and random cards, as well as random categories upon main page launch
 - Card filtering with text search, NSFW blocking* and category filtering
 - Card downloading
@@ -19,22 +20,36 @@ cards.
 This extension was made for [oobabooga's text generation webui](https://github.com/oobabooga/text-generation-webui).
 
 ## Installation
-You need a little bit of coding knowldge (close to none, but the more the better).
+
+### Downloading the extension
+
+#### Git
+
+If you have git installed in your system, please clone this extension inside the extensions folder.
+The extension can be installed in the general `extensions` folder, or the `user_data/extensions`. ***It is recommended to install in the `user_data/extensions` folder for easier data migration on version changes.***
+
+#### Manual download
+
+To download this extension, click the green "Code" button, and select "Download ZIP.". Finally, extract the contents inside the general `extensions` folder, or the `user_data/extensions`. ***It is recommended to install in the `user_data/extensions` folder for easier data migration on version changes.***
+
+### Activating the extension
 
 If you used a 'one-click-installer', open the `CMD_FLAGS.txt` file inside your installation folder.
 
 If you used the 'portable' version or newer, you can find `CMD_FLAGS.txt` inside the `user_data` folder.
 
 To activate the extension, you must add the following to an existing line or new line (if no other startup flags are used):
+
 ```
 --extensions webui_tavernai_charas
 ```
 
 With this, the extension activates and you will see upon restart of the WebUI a new section with the extension contents.
 
-For more information on how to install and activate users, please refer to the [original documentation by oobaboga](https://github.com/oobabooga/text-generation-webui/blob/main/docs/Extensions.md)
+For more information on how to install and activate, please refer to the [original documentation by oobaboga](https://github.com/oobabooga/text-generation-webui/wiki/07-%E2%80%90-Extensions)
 
-## Support me!
+## Support me
+
 This extension takes some time to make, and I love working on it and fixing it for the community.
 
 Want to support my development? Donate me over [Paypal](https://paypal.me/skinnydevi)!
@@ -56,8 +71,17 @@ Card previews from the card's image URL
 Manage your offline cards
 ![OfflineCardManager](https://raw.githubusercontent.com/SkinnyDevi/webui_tavernai_charas/master/docs/offline-cards.png)
 
-
 ## Changelog
+
+### 2.0.1
+
+Fixes:
+
+- Fixes issue [#17](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/17) where the extension updater is broken due to the removal of the module `github.py`.
+  - The legacy module has been preserved, but will be changed in the future in favour of newest manual installation by the WebUI and potential insecurities.
+  - Reminder of updating the extension works fine, but updating itself may not work.
+  - Thank you to [@BadWolf-63](https://github.com/BadWolf-63) and [@stevenxdavis](https://github.com/stevenxdavis) for the bug report!
+- WebUI bug fixes and extension stability improvements
 
 ### [2.0.0]
 
@@ -65,14 +89,10 @@ Manage your offline cards
 > Version 2.0.0 has been adapted to work with Oobabooga's WebUI version 3+. Please update your installation as this will be the supported version from now on.
 
 Fixes:
-* Adapated the `characters` path to search inside `user_data/characters` correctly.
-* Fixed date field when previewing a card: it now shows correct date and time of creation instead of number timestamp.
-* Various style fixes for new theme colors.
 
-### [1.3.3]
-Fixes:
-* Fixes issue [#14](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/14) where some labels had changed getter behaivour. Thank you to [@przewodo](https://github.com/przewodo) for the bug report!
-* Checked extension functionality for WebUI latest update.
+- Adapated the `characters` path to search inside `user_data/characters` correctly.
+- Fixed date field when previewing a card: it now shows correct date and time of creation instead of number timestamp.
+- Various style fixes for new theme colors.
 
 <details>
 
@@ -80,62 +100,92 @@ Fixes:
 <h3>Past changelog</h3>
 </summary>
 
-### [1.3.2]
+### [1.3.3]
+
 Fixes:
-* Fixes issue [#11](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/11) where TavernAI API's changed and would not fetch categories correctly, breaking the extension. Thank you to [@baptisterajaut](https://github.com/baptisterajaut) for the bug report and others for helping out!
-* Fixed a styling bug in the character delete dropdown in the Downloaded tab.
+
+- Fixes issue [#14](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/14) where some labels had changed getter behaivour. Thank you to [@przewodo](https://github.com/przewodo) for the bug report!
+- Checked extension functionality for WebUI latest update.
+
+### [1.3.2]
+
+Fixes:
+
+- Fixes issue [#11](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/11) where TavernAI API's changed and would not fetch categories correctly, breaking the extension. Thank you to [@baptisterajaut](https://github.com/baptisterajaut) for the bug report and others for helping out!
+- Fixed a styling bug in the character delete dropdown in the Downloaded tab.
 
 ### [1.3.1]
+
 Fixes:
-* Fixes issue [#10](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/10) where temp folder wasn't being checked if it was created. Discovered by [@lisea2017](https://github.com/lisea2017) and [@Gamefriend996](https://github.com/Gamefriend996). Thank you for the support!
+
+- Fixes issue [#10](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/10) where temp folder wasn't being checked if it was created. Discovered by [@lisea2017](https://github.com/lisea2017) and [@Gamefriend996](https://github.com/Gamefriend996). Thank you for the support!
 
 Additional:
-* Added a [donate](https://paypal.me/skinnydevi) button below extension version.
+
+- Added a [donate](https://paypal.me/skinnydevi) button below extension version.
 
 ### [1.3.0]
+
 Features:
+
 - Implements a recent preview dropdown list in the Card Preview tab (suggested by [@TheInvisibleMage](https://github.com/TheInvisibleMage) in issue [#7](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/7)). Thank you for the suggestion!
 
 Fixes:
-* Resolves a styling issue with the loader bar in the download notification.
+
+- Resolves a styling issue with the loader bar in the download notification.
 
 ### [1.2.4]
+
 Fixes:
-* Resolves issue [#8](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/8) and [#9](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/9) discovered by [@drago87](https://github.com/drago87). Thanks for the support!
-* Works correctly with the latest version of text-generation-webui (29/01/2024)
+
+- Resolves issue [#8](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/8) and [#9](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/9) discovered by [@drago87](https://github.com/drago87). Thanks for the support!
+- Works correctly with the latest version of text-generation-webui (29/01/2024)
 
 ### [1.2.3]
+
 Fixes:
-* Fixed some styling issues within the extension
+
+- Fixed some styling issues within the extension
 
 ### [1.2.2]
+
 Fixes:
-* Updated to the latest WebUI
-* Patched errors related to removed functions
+
+- Updated to the latest WebUI
+- Patched errors related to removed functions
 
 ### [1.2.1]
+
 Features:
+
 - Added a search bar to search for categories in the Online Character Search tab
 
 Fixes:
-* Implemented a check for fixing disparity between the local extension's version and the local config's last recorded version
+
+- Implemented a check for fixing disparity between the local extension's version and the local config's last recorded version
 
 ### [1.1.1]
+
 Features:
-* Implemented an update checker that displays a button inside the Downloaded Characters' tab, allowing the user to download and install the update with one click
+
+- Implemented an update checker that displays a button inside the Downloaded Characters' tab, allowing the user to download and install the update with one click
 
 Fixes:
-* Categories in the Online Character Searcher tab now are displayed by alphabetical order
+
+- Categories in the Online Character Searcher tab now are displayed by alphabetical order
 
 ### [1.1.0]
+
 Features:
+
 - Added versioning
 - Implemented a Card Preview tab that allows the user to preview a card's content through it's image URL. This refers to issue [#2](https://github.com/SkinnyDevi/webui_tavernai_charas/issues/2). Thank you to [@mykeehu](https://github.com/mykeehu) for the suggestion!
 - Added a prompt before downloading to specify if the card wants to be previewed before downloading
 
 Fixes:
-* Split the main `charas_ui.py` file into submodules for readability
-* Added a commonplace for all components
-* General fixes, refactorings and improvements to the code base
+
+- Split the main `charas_ui.py` file into submodules for readability
+- Added a commonplace for all components
+- General fixes, refactorings and improvements to the code base
 
 </details>

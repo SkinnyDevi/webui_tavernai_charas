@@ -1,21 +1,40 @@
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 """
 This extension's version.
 """
-
 
 import json
 from pathlib import Path
 
 EXTENSION_PATH = Path("extensions")
+USER_DATA_EXTENSION_PATH = Path("user_data/extensions")
+
+
+def base_ext_path() -> Path:
+    if USER_DATA_EXTENSION_PATH.joinpath("webui_tavernai_charas").exists():
+        return USER_DATA_EXTENSION_PATH.joinpath("webui_tavernai_charas")
+
+    return EXTENSION_PATH.joinpath("webui_tavernai_charas")
+
+
+def config_ext_path() -> Path:
+    if USER_DATA_EXTENSION_PATH.joinpath("webui_tavernai_charas").exists():
+        return USER_DATA_EXTENSION_PATH.joinpath(
+            Path("webui_tavernai_charas/config/chara_config.json")
+        )
+
+    return EXTENSION_PATH.joinpath(
+        Path("webui_tavernai_charas/config/chara_config.json")
+    )
+
 
 class ConfigHandler:
     """
     Config class for any configurations needed for the extension.
     """
 
-    path = EXTENSION_PATH.joinpath(Path("webui_tavernai_charas/config/chara_config.json"))
     __instance = None
+    path = config_ext_path()
 
     def __local_version_fixer(self, json_data: dict):
         """

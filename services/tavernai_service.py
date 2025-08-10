@@ -9,7 +9,12 @@ from random import randint
 from PIL import Image, ExifTags
 from typing import Callable
 
-from extensions.webui_tavernai_charas.services.offline_chara_service import CHARACTER_PATH
+from user_data.extensions.webui_tavernai_charas.config.config_handler import (
+    base_ext_path,
+)
+from user_data.extensions.webui_tavernai_charas.services.offline_chara_service import (
+    CHARACTER_PATH,
+)
 
 
 API_URL = "https://tavernai.net"
@@ -542,7 +547,7 @@ class TavernAICardPreview(TavernAICard):
 
 
 class TavernAIPreviewService:
-    temp_path = Path("extensions/webui_tavernai_charas/temp")
+    temp_path = base_ext_path().joinpath("temp")
     """
     Path used to download and examine cards that are not yet to be downloaded.
     """

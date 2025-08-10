@@ -4,15 +4,19 @@ from typing import Callable
 
 import modules.ui as ui
 
-from extensions.webui_tavernai_charas.services.tavernai_service import (
+from user_data.extensions.webui_tavernai_charas.services.tavernai_service import (
     TavernAIService,
     TavernAICard,
     TavernAICategory,
     DownloadCardTracker,
 )
-from extensions.webui_tavernai_charas.config.config_handler import ConfigHandler
-from extensions.webui_tavernai_charas.ui.shared import components as tai_components
-import extensions.webui_tavernai_charas.ui.native_fn as nfn
+from user_data.extensions.webui_tavernai_charas.config.config_handler import (
+    ConfigHandler,
+)
+from user_data.extensions.webui_tavernai_charas.ui.shared import (
+    components as tai_components,
+)
+import user_data.extensions.webui_tavernai_charas.ui.native_fn as nfn
 
 CONFIG = ConfigHandler.setup()
 DOWNLOAD_CARD_TRACKER = DownloadCardTracker()

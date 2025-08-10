@@ -1,4 +1,4 @@
 {
-	"allow_nsfw": true,
-	"version": "2.0.0"
+  "allow_nsfw": false,
+  "version": "2.0.1"
 }
